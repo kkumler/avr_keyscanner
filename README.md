@@ -1,5 +1,5 @@
 # is31io7326_clone
-Functional clone of the IS31IO7326 using an ATtiny48.
+Functional clone of the IS31IO7326 using an ATtiny48 and ATtiny88.
 
 Key reporting and rollover detection are tested and working, all options in the configuration register are saved but do not yet influence behaviour.
 
@@ -9,6 +9,24 @@ Key reporting and rollover detection are tested and working, all options in the 
 2. `cd firmware`
 3. `make`
 4. `make flash` and `make fuse` as necessary to program your MCU
+
+## To make the factory firmware
+
+You'll need a copy of the `TWI_Slave` firmware from [attiny_i2c_bootloader](https://github.com/keyboardio/attiny_i2c_bootloader) built as `twi_slave.hex` and available in the root of this repository.
+
+You can then type `make` in the root of the repository, which will stitch the bootloader together with the AVR keyscanner firmware to make a complete factory image.
+
+## To upload new firmware to existing ATtiny chips
+
+If you have new firmware you want to flash to the ATtiny chip (which has the bootloader installed),
+you run:
+
+```
+python hex_to_atmega.py firmware/main.hex
+```
+
+This will output to `stdout` an ATmega / Arduino program (running as the I2C master) that will flash the firmware to the ATtiny.
+
 
 ### Common issues:
 
