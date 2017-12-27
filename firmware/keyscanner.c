@@ -43,7 +43,7 @@ void keyscanner_init(void) {
     // scan cycle
     // We could _probably_ just skip this, since the scanner will light up pin 0 at 
     // the end of its first run and will then be set correctly for all future runs
-    PORT_ROWS |= _BV(0);
+    PORT_ROWS |= (ROW_PINMASK ^ _BV(0));
 
 
     keyscanner_timer1_init();
