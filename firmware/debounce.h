@@ -9,8 +9,7 @@ so for key 0, the counter is represented by db0[0] and db1[0]
 and the state in state[0].
 */
 typedef struct {
-    uint8_t db0;    // counter bit 0
-    uint8_t db1;    // counter bit 1
+    uint8_t counters[8];
     uint8_t state;  // debounced state
 } debounce_t;
 
@@ -42,25 +41,30 @@ typedef struct {
  * And a way to flip selected bits in a variable or register:
  *   Set B to 1, then A ^ B = !A
  */
-static inline uint8_t debounce(uint8_t sample, debounce_t *debouncer) {
-    uint8_t delta, changes;
-
+static uint8_t debounce(uint8_t sample, debounce_t *debouncer) {
+    uint8_t delta;
+    uint8_t changes = 0;
+    
     // Use xor to detect changes from last stable state:
     // if a key has changed, it's bit will be 1, otherwise 0
     delta = sample ^ debouncer->state;
 
-    // Increment counters and reset any unchanged bits:
-    // increment bit 1 for all changed keys
-    debouncer->db1 = ((debouncer->db1) ^ (debouncer->db0)) & delta;
-    // increment bit 0 for all changed keys
-    debouncer->db0 = ~(debouncer->db0) & delta;
+    for(int8_t i =7;i>=0;i--) {
+    	if ((sample & _BV(i)) && debouncer->counters[i] <3 ) 	 {
+    		debouncer->counters[i]++;
+    	} else if ((sample ^ _BV(i))  && debouncer->counters[i] > 0 ) {
+    		debouncer->counters[i]--;
+    	}	
+ 
+       if (delta & _BV(i)) {
+   	if(debouncer->counters[i] == 0 || debouncer->counters[i] == 3) {
+    		changes |= _BV(i);
+    	} 
+      }    
+  }    
 
-    // Calculate returned change set: if delta is still true
-    // and the counter has wrapped back to 0, the key is changed.
+   
+  debouncer->state ^= changes;
 
-    changes = ~(~delta | (debouncer->db0) | (debouncer->db1));
-    // Update state: in this case use xor to flip any bit that is true in changes.
-    debouncer->state ^= changes;
-
-    return changes;
+  return changes;
 }
