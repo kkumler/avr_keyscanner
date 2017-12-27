@@ -58,6 +58,8 @@ void keyscanner_main(void) {
         return;
     }
 
+    do_scan = 0;
+
     // For each enabled row...
         /* We need a no-op for synchronization. So says the datasheet
          * in Section 10.2.5 */
@@ -79,14 +81,6 @@ void keyscanner_main(void) {
 
     // Most of the time there will be no new key events
     if (__builtin_expect(debounced_changes == 0, 1)) {
-        // Only run the debouncing delay when we haven't successfully found
-        // a debounced event
-
-        // XXX TODO make sure this isn't crazy. could this 
-        // cause us to do reads too fast and mis-debounce
-        // some secondary key while we successfully debounce a
-        // first key.
-        do_scan = 0;
         return;
     }
 
