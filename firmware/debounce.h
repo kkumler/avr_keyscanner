@@ -2,6 +2,8 @@
 
 #include <stdint.h>
 
+#define DEBOUNCE_CYCLES 8
+
 /*
 each of these 8 bit variables are storing the state for 8 keys
 
@@ -50,14 +52,14 @@ static uint8_t debounce(uint8_t sample, debounce_t *debouncer) {
     delta = sample ^ debouncer->state;
 
     for(int8_t i =7;i>=0;i--) {
-    	if ((sample & _BV(i)) && debouncer->counters[i] <3 ) 	 {
+    	if ((sample & _BV(i)) && debouncer->counters[i] < DEBOUNCE_CYCLES) 	 {
     		debouncer->counters[i]++;
     	} else if ((sample ^ _BV(i))  && debouncer->counters[i] > 0 ) {
     		debouncer->counters[i]--;
     	}	
  
        if (delta & _BV(i)) {
-   	if(debouncer->counters[i] == 0 || debouncer->counters[i] == 3) {
+   	if(debouncer->counters[i] == 0 || debouncer->counters[i] == DEBOUNCE_CYCLES) {
     		changes |= _BV(i);
     	} 
       }    
