@@ -7,10 +7,10 @@
 #include "keyscanner.h"
 
 debounce_t db[] = {
-    {0x00, 0x00, 0xFF},
-    {0x00, 0x00, 0xFF},
-    {0x00, 0x00, 0xFF},
-    {0x00, 0x00, 0xFF}
+    {0x00, 0x00, 0b11111111},
+    {0x00, 0x00, 0b11111111},
+    {0x00, 0x00, 0b11111111},
+    {0x00, 0x00, 0b11111111}
 };
 
 // do_scan gets set any time we should actually do a scan
@@ -25,7 +25,7 @@ void keyscanner_init(void) {
     // Read from cols -- We use all 8 bits of cols
     DDR_COLS  = 0x00;
     // Turn on the Pullups
-    PORT_COLS = 0xFF;
+    PORT_COLS = 0b11111111;
 
     // Assert comm_en so we can use the interhand transcievers
     // (Until comm_en on the i2c transcievers is pulled high,
@@ -89,10 +89,10 @@ void keyscanner_main(void) {
     // when we read from the ringbuffer, we always get 
     // four bytes representing a single keyboard state.
     DISABLE_INTERRUPTS({
-        ringbuf_append( db[0].state ^ 0xff );
-        ringbuf_append( db[1].state ^ 0xff );
-        ringbuf_append( db[2].state ^ 0xff );
-        ringbuf_append( db[3].state ^ 0xff );
+        ringbuf_append( db[0].state ^ 0b11111111 );
+        ringbuf_append( db[1].state ^ 0b11111111 );
+        ringbuf_append( db[2].state ^ 0b11111111 );
+        ringbuf_append( db[3].state ^ 0b11111111 );
     });
 }
 
