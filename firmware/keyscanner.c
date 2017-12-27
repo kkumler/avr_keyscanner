@@ -37,6 +37,15 @@ void keyscanner_init(void) {
     HIGH(PORTC,7);
     SET_OUTPUT(DDRC,7);
 
+
+    // Turn on row 0. We set it now so that when we start scanning the matrix the first time
+    // row 0 is turned on. this lets us avoid a noop as we start off the very first  
+    // scan cycle
+    // We could _probably_ just skip this, since the scanner will light up pin 0 at 
+    // the end of its first run and will then be set correctly for all future runs
+    PORT_ROWS |= _BV(0);
+
+
     keyscanner_timer1_init();
 }
 
@@ -50,18 +59,23 @@ void keyscanner_main(void) {
     }
 
     // For each enabled row...
-    for (uint8_t row = 0; row < ROW_COUNT; ++row) {
-        // Reset all of our row pins, then
-        // set the one we want to read as low
-        LOW(PORT_ROWS, row);
         /* We need a no-op for synchronization. So says the datasheet
          * in Section 10.2.5 */
-        asm("nop");
-        pin_data = PIN_COLS;
-        HIGH(PORT_ROWS,row);
-        // Debounce key state
-        debounced_changes += debounce((pin_data) , db + row);
-    }
+    pin_data = PIN_COLS;
+    PORT_ROWS |= (ROW_PINMASK ^ _BV(1));
+    debounced_changes += debounce((pin_data) , db);
+
+    pin_data = PIN_COLS;
+    PORT_ROWS |= (ROW_PINMASK ^ _BV(2));
+    debounced_changes += debounce((pin_data) , db + 1);
+
+    pin_data = PIN_COLS;
+    PORT_ROWS |= (ROW_PINMASK ^ _BV(3));
+    debounced_changes += debounce((pin_data) , db + 2);
+
+    pin_data = PIN_COLS;
+    PORT_ROWS |= (ROW_PINMASK ^ _BV(0));
+    debounced_changes += debounce((pin_data) , db + 3);
 
     // Most of the time there will be no new key events
     if (__builtin_expect(debounced_changes == 0, 1)) {
