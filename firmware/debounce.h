@@ -46,30 +46,30 @@ typedef struct {
 static uint8_t debounce(uint8_t sample, debounce_t *debouncer) {
     uint8_t delta;
     uint8_t changes = 0;
-    
+
     // Use xor to detect changes from last stable state:
     // if a key has changed, it's bit will be 1, otherwise 0
     delta = sample ^ debouncer->state;
 
-    for(int8_t i =7;i>=0;i--) {
-    	if (sample & _BV(i)) {
-	   if(debouncer->counters[i] < DEBOUNCE_CYCLES) 	 {
-    	        debouncer->counters[i]++;
-    	   }
-	} else { 
-	    if (debouncer->counters[i] > 0 ) {
-    		debouncer->counters[i]--;
-    	}	
- 
-       if (delta & _BV(i)) {
-   	if(debouncer->counters[i] == 0 || debouncer->counters[i] == DEBOUNCE_CYCLES) {
-    		changes |= _BV(i);
-    	} 
-      }    
-  }    
+    for(int8_t i =7; i>=0; i--) {
+        if (sample & _BV(i)) {
+            if(debouncer->counters[i] < DEBOUNCE_CYCLES) 	 {
+                debouncer->counters[i]++;
+            }
+        } else {
+            if (debouncer->counters[i] > 0 ) {
+                debouncer->counters[i]--;
+            }
+        }
+        if (delta & _BV(i)) {
+            if(debouncer->counters[i] == 0 || debouncer->counters[i] == DEBOUNCE_CYCLES) {
+                changes |= _BV(i);
+            }
+        }
+    }
 
-   
-  debouncer->state ^= changes;
 
-  return changes;
+    debouncer->state ^= changes;
+
+    return changes;
 }
