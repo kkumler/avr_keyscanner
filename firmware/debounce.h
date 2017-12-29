@@ -52,9 +52,12 @@ static uint8_t debounce(uint8_t sample, debounce_t *debouncer) {
     delta = sample ^ debouncer->state;
 
     for(int8_t i =7;i>=0;i--) {
-    	if ((sample & _BV(i)) && debouncer->counters[i] < DEBOUNCE_CYCLES) 	 {
-    		debouncer->counters[i]++;
-    	} else if ((sample ^ _BV(i))  && debouncer->counters[i] > 0 ) {
+    	if (sample & _BV(i)) {
+	   if(debouncer->counters[i] < DEBOUNCE_CYCLES) 	 {
+    	        debouncer->counters[i]++;
+    	   }
+	} else { 
+	    if (debouncer->counters[i] > 0 ) {
     		debouncer->counters[i]--;
     	}	
  
