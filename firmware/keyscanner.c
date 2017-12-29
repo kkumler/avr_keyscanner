@@ -52,16 +52,10 @@ void keyscanner_init(void) {
     keyscanner_timer1_init();
 }
 
-
-void keyscanner_main(void) {
+void keyscanner_scan(void) {
+    
     uint8_t debounced_changes = 0;
     uint8_t pin_data;
-
-    if (__builtin_expect(do_scan == 0, 1)) {
-        return;
-    }
-
-    do_scan = 0;
 
     // For each enabled row...
     for (uint8_t row = 0; row < ROW_COUNT; ++row) {
@@ -92,6 +86,10 @@ void keyscanner_main(void) {
         ringbuf_append( db[2].state ^ 0b11111111 );
         ringbuf_append( db[3].state ^ 0b11111111 );
     });
+
+}
+
+void keyscanner_main(void) {
 }
 
 // initialize timer, interrupt and variable
@@ -115,5 +113,5 @@ void keyscanner_timer1_init(void) {
 
 // interrupt service routine (ISR) for timer 1 A compare match
 ISR(TIMER1_COMPA_vect) {
-    do_scan = 1; // Yes! Let's do a scan
+    keyscanner_scan(); // Yes! Let's do a scan
 }
