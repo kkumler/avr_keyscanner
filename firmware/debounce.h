@@ -58,7 +58,7 @@ static uint8_t debounce(uint8_t sample, debounce_t *debouncer) {
                     if (__builtin_expect( (sample & _BV(i)) ^ (debouncer->state & _BV(i)), 0) ) {  // The samples are probably the same
                         // record the change to return to the caller
                         changes |= _BV(i);
-                        // Update the debounced state.
+                        // Toggle the debounced state.
                         debouncer->state ^= _BV(i);
                     }
                 }
@@ -74,7 +74,7 @@ static uint8_t debounce(uint8_t sample, debounce_t *debouncer) {
                     if (__builtin_expect( (sample & _BV(i)) ^ (debouncer->state & _BV(i)), 0) ) {  // The samples are probably the same
                         // record the change to return to the caller
                         changes |= _BV(i);
-                        // Update the debounced state.
+                        // Toggle the debounced state.
                         debouncer->state ^= _BV(i);
                     }
                 }
