@@ -73,12 +73,13 @@ static uint8_t debounce(uint8_t sample, debounce_t *debouncer) {
             if(debouncer->counters[i] == 0 || debouncer->counters[i] == DEBOUNCE_CYCLES) {
 		// record the change to return to the caller
                 changes |= _BV(i);
+		// Update the debounced state.
+		debouncer->state ^= _BV(i);
             }
         }
     }
 
 
-    debouncer->state ^= changes;
 
     return changes;
 }
