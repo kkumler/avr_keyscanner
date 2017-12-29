@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 
-#define DEBOUNCE_CYCLES 15
+#define DEBOUNCE_CYCLES 20
 
 /*
 each of these 8 bit variables are storing the state for 8 keys
