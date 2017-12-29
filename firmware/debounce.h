@@ -44,12 +44,11 @@ typedef struct {
  *   Set B to 1, then A ^ B = !A
  */
 static uint8_t debounce(uint8_t sample, debounce_t *debouncer) {
-    uint8_t delta;
     uint8_t changes = 0;
 
     // Use xor to detect changes from last stable state:
-    // if a key has changed, it's bit will be 1, otherwise 0
-    delta = sample ^ debouncer->state;
+    // if a key has changed, its bit will be 1, otherwise 0
+    //uint8_t delta = sample ^ debouncer->state;
 
     for(int8_t i=0; i<=7; i++) {
 	// If the pin is on
@@ -69,7 +68,7 @@ static uint8_t debounce(uint8_t sample, debounce_t *debouncer) {
             }
         }
        // If the sample is different than the currently debounced state
-       if (__builtin_expect( (delta & _BV(i)) , 0) ) {
+       if (__builtin_expect( (sample & _BV(i)) ^ (debouncer->state & _BV(i)) , 0) ) {
 	    // If our counter has hit an edge
             if(debouncer->counters[i] == 0 || debouncer->counters[i] == DEBOUNCE_CYCLES) {
 		// record the change to return to the caller
