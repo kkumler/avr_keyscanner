@@ -55,7 +55,7 @@ static uint8_t debounce(uint8_t sample, debounce_t *debouncer) {
                 //Increment the counter
                 debouncer->counters[i]++;
                 if(debouncer->counters[i] == DEBOUNCE_CYCLES) {
-                    if (__builtin_expect( (sample & _BV(i)) ^ (debouncer->state & _BV(i)), 0) ) {  // The samples are probably the same
+                    if (__builtin_expect( (debouncer->state ^ _BV(i)), 0) ) {  // The samples are probably the same
                         // record the change to return to the caller
                         changes |= _BV(i);
                         // Toggle the debounced state.
@@ -71,7 +71,7 @@ static uint8_t debounce(uint8_t sample, debounce_t *debouncer) {
                 debouncer->counters[i]--;
                 if(debouncer->counters[i] == 0 ) {
                     // If the sample is different than the currently debounced state
-                    if (__builtin_expect( (sample & _BV(i)) ^ (debouncer->state & _BV(i)), 0) ) {  // The samples are probably the same
+                    if (__builtin_expect(  (debouncer->state & _BV(i)), 0) ) {  // The samples are probably the same
                         // record the change to return to the caller
                         changes |= _BV(i);
                         // Toggle the debounced state.
