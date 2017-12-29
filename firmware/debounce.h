@@ -48,36 +48,41 @@ static uint8_t debounce(uint8_t sample, debounce_t *debouncer) {
 
 
     for(int8_t i=0; i<=7; i++) {
-	// If the pin is on
-        if (__builtin_expect(( sample & _BV(i)) , 0) ) { // It's probably not on
-	    // If we have not yet filled the counter
-    	    if (__builtin_expect(( debouncer->counters[i] < DEBOUNCE_CYCLES ) , 1) ) { // The counter is probably not full
-		//Increment the counter
+        // If the pin is on
+        if (__builtin_expect(( sample & _BV(i)), 0) ) {  // It's probably not on
+            // If we have not yet filled the counter
+            if (__builtin_expect(( debouncer->counters[i] < DEBOUNCE_CYCLES ), 1) ) {  // The counter is probably not full
+                //Increment the counter
                 debouncer->counters[i]++;
+                if(debouncer->counters[i] == DEBOUNCE_CYCLES) {
+                    if (__builtin_expect( (sample & _BV(i)) ^ (debouncer->state & _BV(i)), 0) ) {  // The samples are probably the same
+                        // record the change to return to the caller
+                        changes |= _BV(i);
+                        // Update the debounced state.
+                        debouncer->state ^= _BV(i);
+                    }
+                }
             }
-        }
-        // If the pin is off
-	else {
-	    // If the counter isn't bottomed out
-    	    if (__builtin_expect(( debouncer->counters[i] > 0) , 0) ) { // The counter is probably bottomed out
-		// Decrement the counter
+            // If the pin is off
+        } else {
+            // If the counter isn't bottomed out
+            if (__builtin_expect(( debouncer->counters[i] > 0), 0) ) {  // The counter is probably bottomed out
+                // Decrement the counter
                 debouncer->counters[i]--;
-            }
-       }
+                if(debouncer->counters[i] == 0 ) {
+                    // If the sample is different than the currently debounced state
+                    if (__builtin_expect( (sample & _BV(i)) ^ (debouncer->state & _BV(i)), 0) ) {  // The samples are probably the same
+                        // record the change to return to the caller
+                        changes |= _BV(i);
+                        // Update the debounced state.
+                        debouncer->state ^= _BV(i);
+                    }
+                }
 
-       // If the sample is different than the currently debounced state
-       if (__builtin_expect( (sample & _BV(i)) ^ (debouncer->state & _BV(i)) , 0) ) { // The samples are probably the same
-	    // If our counter has hit an edge
-            if(debouncer->counters[i] == 0 || debouncer->counters[i] == DEBOUNCE_CYCLES) {
-		// record the change to return to the caller
-                changes |= _BV(i);
-		// Update the debounced state.
-		debouncer->state ^= _BV(i);
             }
         }
+
     }
-
-
 
     return changes;
 }
