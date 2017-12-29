@@ -51,7 +51,8 @@ static uint8_t debounce(uint8_t sample, debounce_t *debouncer) {
     // if a key has changed, it's bit will be 1, otherwise 0
     delta = sample ^ debouncer->state;
 
-    for(int8_t i =7; i>=0; i--) {
+    for(int8_t i=0; i<=7; i++) {
+	// If the pin is on
         if (__builtin_expect(( sample & _BV(i)) , 0) ) {
     	    if (__builtin_expect(( debouncer->counters[i] < DEBOUNCE_CYCLES ) , 1) ) {
                 debouncer->counters[i]++;
