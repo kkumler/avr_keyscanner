@@ -54,16 +54,25 @@ static uint8_t debounce(uint8_t sample, debounce_t *debouncer) {
     for(int8_t i=0; i<=7; i++) {
 	// If the pin is on
         if (__builtin_expect(( sample & _BV(i)) , 0) ) {
+	    // If we have not yet filled the counter
     	    if (__builtin_expect(( debouncer->counters[i] < DEBOUNCE_CYCLES ) , 1) ) {
+		//Increment the counter
                 debouncer->counters[i]++;
             }
-        } else {
+        }
+        // If the pin is off
+	else {
+	    // If the counter isn't bottomed out
     	    if (__builtin_expect(( debouncer->counters[i] > 0) , 0) ) {
+		// Decrement the counter
                 debouncer->counters[i]--;
             }
         }
+       // If the sample is different than the currently debounced state
        if (__builtin_expect( (delta & _BV(i)) , 0) ) {
+	    // If our counter has hit an edge
             if(debouncer->counters[i] == 0 || debouncer->counters[i] == DEBOUNCE_CYCLES) {
+		// record the change to return to the caller
                 changes |= _BV(i);
             }
         }
