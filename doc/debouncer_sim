@@ -1,0 +1,163 @@
+
+
+print "GOOD-DATA:\n";
+handle_scans(
+    [
+        0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0,
+        0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0,
+    ]
+);
+print "\n";
+print "CORRUPT-DATA:\n";
+handle_scans(
+    [
+        0, 1, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0,
+        0, 0, 1, 1, 0, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1,
+        1, 1, 0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1,
+        0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0,
+    ]
+);
+
+
+print "\n";
+sub handle_scans() {
+    my $data = shift;
+    print "DATA:    ";
+    for my $entry (@$data) {
+        print $entry;
+    }
+    print "\n";
+    print "OLD:     ";
+my $db = debouncer->new();
+    for my $entry (@$data) {
+        handle_scan_orig( $entry, $db );
+    }
+    print "\n";
+    print "NEW:     ";
+ $db = debouncer->new();
+    my @counters;
+    for my $entry (@$data) {
+        handle_scan( $entry, $db );
+	push @counters, $db->counter();
+    }
+    print "\n";
+   print "THEIRS:  0000001111111111100000001111100000000111111111110000000001111111000\n";
+   print "COUNTERS:".join("",@counters) ."\n";
+
+}
+
+sub debounce_orig {
+    my $sample    = shift;
+    my $debouncer = shift;
+
+    my $state_has_changed, $changes;
+
+    # Use xor to detect $changes from last stable state:
+    # if a key has changed, it's bit will be 1, otherwise 0
+    $state_has_changed = $sample ^ $debouncer->state;
+
+    # Increment counters and reset any unchanged bits:
+    # increment bit 1 for all changed keys
+
+    # If the current sample's state does not match the last debounced state
+    # and the previous $debouncer state is either 0,0 or 1,1, set db1 to 1.
+    $debouncer->db1 =
+      ( ( $debouncer->db1 ) ^ ( $debouncer->db0 ) ) & $state_has_changed;
+
+    # increment bit 0 for all changed keys
+    # Set db0 to 1 if it was previously 0 and is now 1?
+
+    $debouncer->db0 = ~( $debouncer->db0 ) & $state_has_changed;
+
+    # Calculate returned change set: if $state_has_changed is still true
+    # and the counter has wrapped back to 0, the key is changed.
+
+    $changes =
+      ~( ~$state_has_changed | ( $debouncer->db0 ) | ( $debouncer->db1 ) );
+
+  # Update state: in this case use xor to flip any bit that is true in $changes.
+    $debouncer->state ^= $changes;
+
+    return $changes;
+
+}
+
+sub handle_scan {
+    my $sample  = shift;
+    my $db      = shift;
+    my $changes = debounce( $sample, $db );
+    print bits( $db->state );
+}
+
+sub handle_scan_orig {
+    my $sample  = shift;
+    my $db      = shift;
+    my $changes = debounce_orig( $sample, $db );
+    print bits( $db->state );
+}
+
+sub debounce {
+    my $sample    = shift;
+    my $debouncer = shift;
+
+    my $delta;
+    my $changes = 0;
+
+    $delta = $sample ^ $debouncer->state;
+
+        if ( $sample ^ 1) {
+		if ( $debouncer->counter>0) {
+            $debouncer->counter = $debouncer->counter - 1;
+        	} 
+	} else { 
+        if ($debouncer->counter<3)  {
+            $debouncer->counter = $debouncer->counter + 1;
+        }
+}
+    if ( $delta & 1 ) {
+        if ( $debouncer->counter == 0 || $debouncer->counter == 3 ) {
+            $changes = 1;
+        }
+    }
+
+    $debouncer->state ^= $changes;
+
+    return $changes;
+
+}
+
+sub bits {
+    my $num = shift;
+    return $num;
+}
+
+package debouncer;
+
+sub new {
+    my $class = shift;
+    my $self  = {};
+    bless $self, $class;
+    $self->db0     = 0;
+    $self->db1     = 0;
+    $self->state   = 0;
+    $self->counter = 0;
+    return $self;
+}
+
+sub db0 : lvalue {
+    return shift->{db0};
+}
+
+sub db1 : lvalue {
+    return shift->{db1};
+}
+
+sub state : lvalue {
+    return shift->{state};
+}
+
+sub counter : lvalue {
+    return shift->{counter};
+}
