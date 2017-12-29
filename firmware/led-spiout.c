@@ -45,9 +45,8 @@ void led_data_ready() {
     if(leds_dirty <2) {
         leds_dirty++;
     }
-    /* Start transmitting the first byte of the start frame */
-    //led_init();
-    led_set_spi_frequency(LED_SPI_FREQUENCY_DEFAULT);
+    // Turn on SPI
+    SPCR |= _BV(SPIE);
 }
 
 /* this function updates our led data state. We use this to
@@ -212,7 +211,7 @@ ISR(SPI_STC_vect) {
             led_phase = START_FRAME;
             index = 0;
             if (leds_dirty ==0) {
-                led_set_spi_frequency(LED_SPI_OFF);
+                SPCR &= ~_BV(SPIE);
             }
         }
         break;
