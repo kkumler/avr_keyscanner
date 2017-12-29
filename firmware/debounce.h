@@ -52,16 +52,16 @@ static uint8_t debounce(uint8_t sample, debounce_t *debouncer) {
     delta = sample ^ debouncer->state;
 
     for(int8_t i =7; i>=0; i--) {
-        if (sample & _BV(i)) {
-            if(debouncer->counters[i] < DEBOUNCE_CYCLES) 	 {
+        if (__builtin_expect(( sample & _BV(i)) , 0) ) {
+    	    if (__builtin_expect(( debouncer->counters[i] < DEBOUNCE_CYCLES ) , 1) ) {
                 debouncer->counters[i]++;
             }
         } else {
-            if (debouncer->counters[i] > 0 ) {
+    	    if (__builtin_expect(( debouncer->counters[i] > 0) , 0) ) {
                 debouncer->counters[i]--;
             }
         }
-        if (delta & _BV(i)) {
+       if (__builtin_expect( (delta & _BV(i)) , 0) ) {
             if(debouncer->counters[i] == 0 || debouncer->counters[i] == DEBOUNCE_CYCLES) {
                 changes |= _BV(i);
             }
