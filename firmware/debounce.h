@@ -7,7 +7,7 @@
 /*
 each of these 8 bit variables are storing the state for 8 keys
 
-so for key 0, the counter is represented by db0[0] and db1[0] 
+so for key 0, the counter is represented by db0[0] and db1[0]
 and the state in state[0].
 */
 typedef struct {

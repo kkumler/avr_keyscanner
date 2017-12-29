@@ -44,18 +44,18 @@ static volatile uint8_t leds_dirty = 1;
 void led_data_ready() {
     if(leds_dirty <2) {
         leds_dirty++;
-    }    
+    }
     /* Start transmitting the first byte of the start frame */
     //led_init();
     led_set_spi_frequency(LED_SPI_FREQUENCY_DEFAULT);
 }
 
-/* this function updates our led data state. We use this to 
+/* this function updates our led data state. We use this to
  * make sure that we update the LEDs  if there's any data that hasn't yet been
  * sent. Because there's a potential race condition in the LED update state
  * machine that could result in a skipped LED update if the LED buffer was
- * updated during the 'start' frame, we let the dirty state variable 
- * go to 2. 
+ * updated during the 'start' frame, we let the dirty state variable
+ * go to 2.
  *
  * This means that there's a slight chance we'll update all the LEDs twice
  * if we receive an update during the start frame, but that's better than
@@ -80,16 +80,16 @@ void led_update_bank(uint8_t *buf, const uint8_t bank) {
 void led_set_one_to(uint8_t led, uint8_t *buf) {
     DISABLE_INTERRUPTS({
         memcpy((uint8_t *)led_buffer.each[led], buf, LED_DATA_SIZE);
-    	led_data_ready();
+        led_data_ready();
     });
 
 }
 
 void led_set_global_brightness(uint8_t brightness) {
-	if (brightness > 31) {
-		return;
-	}
-	global_brightness = 0xE0 + brightness;
+    if (brightness > 31) {
+        return;
+    }
+    global_brightness = 0xE0 + brightness;
 }
 
 void led_set_all_to( uint8_t *buf) {
@@ -204,15 +204,15 @@ ISR(SPI_STC_vect) {
         break;
 
     case END_FRAME:
-	// The pwm reset frame needs to be 32 bits of 0 for SK9822 based LEDS
-	// After that, we need at num_leds/2 more bits of 0 
-	// For up to 64 LEDs, that means 64 bits of 0
+        // The pwm reset frame needs to be 32 bits of 0 for SK9822 based LEDS
+        // After that, we need at num_leds/2 more bits of 0
+        // For up to 64 LEDs, that means 64 bits of 0
         SPDR = 0x00;
         if(++index == 8) { /* NB: increase this number if ever >64 LEDs */
             led_phase = START_FRAME;
             index = 0;
             if (leds_dirty ==0) {
-         	led_set_spi_frequency(LED_SPI_OFF);
+                led_set_spi_frequency(LED_SPI_OFF);
             }
         }
         break;

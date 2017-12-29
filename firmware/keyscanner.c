@@ -74,7 +74,7 @@ void keyscanner_main(void) {
         pin_data = PIN_COLS;
         HIGH(PORT_ROWS,row);
         // Debounce key state
-        debounced_changes += debounce((pin_data) , db + row);
+        debounced_changes += debounce((pin_data), db + row);
     }
 
     // Most of the time there will be no new key events
@@ -84,7 +84,7 @@ void keyscanner_main(void) {
 
     // Snapshot the keystate to add to the ring buffer
     // Run this with interrupts off to make sure that
-    // when we read from the ringbuffer, we always get 
+    // when we read from the ringbuffer, we always get
     // four bytes representing a single keyboard state.
     DISABLE_INTERRUPTS({
         ringbuf_append( db[0].state ^ 0b11111111 );

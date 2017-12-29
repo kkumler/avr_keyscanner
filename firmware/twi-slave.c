@@ -17,8 +17,8 @@
 static unsigned char TWI_buf[TWI_BUFFER_SIZE]; // Transceiver buffer. Set the size in the header file
 static unsigned char TWI_msgSize  = 0;         // Number of bytes to be transmitted.
 
-void (*TWI_Tx_Data_Callback)( unsigned char * , unsigned char * );
-void (*TWI_Rx_Data_Callback)( unsigned char * , unsigned char );
+void (*TWI_Tx_Data_Callback)( unsigned char *, unsigned char * );
+void (*TWI_Rx_Data_Callback)( unsigned char *, unsigned char );
 
 /**
  * TWI flags explained:
