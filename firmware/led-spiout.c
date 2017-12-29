@@ -72,15 +72,19 @@ void led_update_bank(uint8_t *buf, const uint8_t bank) {
 
     DISABLE_INTERRUPTS({
         memcpy((uint8_t *)led_buffer.bank[bank], buf, LED_BANK_SIZE);
-        led_data_ready();
     });
+    // Only do our update if we're updating bank 4
+    // this way we avoid 3 wasted LED updates
+    if (bank == NUM_LED_BANKS-1) {
+        led_data_ready();
+    }
 }
 
 void led_set_one_to(uint8_t led, uint8_t *buf) {
     DISABLE_INTERRUPTS({
         memcpy((uint8_t *)led_buffer.each[led], buf, LED_DATA_SIZE);
-        led_data_ready();
     });
+        led_data_ready();
 
 }
 
@@ -96,8 +100,8 @@ void led_set_all_to( uint8_t *buf) {
         for(int8_t led=31; led>=0; led--) {
             memcpy((uint8_t *)led_buffer.each[led], buf, LED_DATA_SIZE);
         }
-        led_data_ready();
     });
+        led_data_ready();
 
 }
 
