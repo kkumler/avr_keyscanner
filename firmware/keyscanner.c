@@ -48,6 +48,10 @@ void keyscanner_init(void) {
     // we're not using it as part of the keyscanner
     HIGH(PORTC,7);
     SET_OUTPUT(DDRC,7);
+	
+    // Turn off row 0's output before the first scan, since we optimize pin toggling 
+    // until just after the read
+    PORT_ROWS ^= _BV(0);
 
     keyscanner_timer1_init();
 }
@@ -57,19 +61,25 @@ void keyscanner_scan(void) {
     uint8_t debounced_changes = 0;
     uint8_t pin_data;
 
-    // For each enabled row...
-    for (uint8_t row = 0; row < ROW_COUNT; ++row) {
-        // Reset all of our row pins, then
-        // set the one we want to read as low
-        LOW(PORT_ROWS, row);
-        /* We need a no-op for synchronization. So says the datasheet
-         * in Section 10.2.5 */
-        asm("nop");
+    	// Read pin data
         pin_data = PIN_COLS;
-        HIGH(PORT_ROWS,row);
-        // Debounce key state
-        debounced_changes += debounce((pin_data), db + row);
-    }
+	// Toggle this row and the next row. (This avoid a noop after toggling and before reading the data)
+	PORT_ROWS ^= (_BV(0) | _BV(1));
+	// Debounce the pin data for row 0
+        debounced_changes += debounce((pin_data), db + 0);
+
+        pin_data = PIN_COLS;
+	PORT_ROWS ^= (_BV(1)|_BV(2));
+        debounced_changes += debounce((pin_data), db + 1);
+
+        pin_data = PIN_COLS;
+	PORT_ROWS ^= (_BV(2)|_BV(3));
+        debounced_changes += debounce((pin_data), db + 2);
+
+        pin_data = PIN_COLS;
+	PORT_ROWS ^= (_BV(3)|_BV(0));
+        debounced_changes += debounce((pin_data), db + 3);
+
 
     // Most of the time there will be no new key events
     if (__builtin_expect(debounced_changes == 0, 1)) {
