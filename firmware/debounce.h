@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 
-#define DEBOUNCE_CYCLES 20
+extern uint8_t keyscanner_debounce_cycles;
 
 /*
 each of these 8 bit variables are storing the state for 8 keys
@@ -51,10 +51,10 @@ static uint8_t debounce(uint8_t sample, debounce_t *debouncer) {
         // If the pin is on
         if (__builtin_expect(( sample & _BV(i)), 0) ) {  // It's probably not on
             // If we have not yet filled the counter
-            if (__builtin_expect(( debouncer->counters[i] < DEBOUNCE_CYCLES ), 1) ) {  // The counter is probably not full
+            if (__builtin_expect(( debouncer->counters[i] < keyscanner_debounce_cycles ), 1) ) {  // The counter is probably not full
                 //Increment the counter
                 debouncer->counters[i]++;
-                if(debouncer->counters[i] == DEBOUNCE_CYCLES) {
+                if(debouncer->counters[i] == keyscanner_debounce_cycles) {
                     if (__builtin_expect( (debouncer->state ^ _BV(i)), 0) ) {  // The samples are probably the same
                         // record the change to return to the caller
                         changes |= _BV(i);

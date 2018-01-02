@@ -43,3 +43,7 @@
  * That lets us take about 40 readings during a 'regular' 5ms debounce
  */
 #define KEYSCAN_INTERVAL_DEFAULT 3
+
+
+#define DEBOUNCE_CYCLES 40
+

@@ -25,6 +25,9 @@ debounce_t db[] = {
     }
 };
 
+uint8_t keyscanner_debounce_cycles = DEBOUNCE_CYCLES;
+
+
 // do_scan gets set any time we should actually do a scan
 volatile uint8_t do_scan = 1;
 
