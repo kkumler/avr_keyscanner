@@ -29,3 +29,17 @@
 
 #define TWI_REPLY_NONE 0x00
 #define TWI_REPLY_KEYDATA 0x01
+
+
+/* Measured timings
+ * Interval of 1 = 62us
+ * Interval of 3=  0.1245ms
+ * interval of 5 = 0.18ms
+ * Interval of 7 = 0.245ms
+ * Interval of 10 = 0.3415ms
+ * Interval of 50 = 1.585ms
+ * 
+ * Default to a minimum of 0.125ms or so between reads
+ * That lets us take about 40 readings during a 'regular' 5ms debounce
+ */
+#define KEYSCAN_INTERVAL_DEFAULT 3
