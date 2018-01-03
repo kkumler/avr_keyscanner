@@ -39,11 +39,11 @@
  * Interval of 10 = 0.3415ms
  * Interval of 50 = 1.585ms
  * 
- * Default to a minimum of 0.125ms or so between reads
- * That lets us take about 40 readings during a 'regular' 5ms debounce
+ * Default to a minimum of 0.25ms or so between reads
+ * That lets us take about 20 readings during a 'regular' 5ms debounce
  */
-#define KEYSCAN_INTERVAL_DEFAULT 3
+#define KEYSCAN_INTERVAL_DEFAULT 7
 
 
-#define DEBOUNCE_CYCLES 40
+#define DEBOUNCE_CYCLES 20
 
