@@ -56,11 +56,16 @@ static uint8_t debounce(uint8_t sample, debounce_t *debouncer) {
         // If the pin is on
         if (__builtin_expect(( sample & _BV(i)), EXPECT_FALSE) ) {  // It's probably not on
             // If we have not yet filled the counter
-            if (__builtin_expect(( debouncer->counters[i] < keyscanner_debounce_cycles ), EXPECT_TRUE) ) {  // The counter is probably not full
+	    // It'll usually not be filled
+            if (__builtin_expect(( debouncer->counters[i] < keyscanner_debounce_cycles ), EXPECT_TRUE) ) { 
                 //Increment the counter
                 debouncer->counters[i]++;
-                if(debouncer->counters[i] == keyscanner_debounce_cycles) {
-                    if (__builtin_expect( (debouncer->state ^ _BV(i)), EXPECT_FALSE) ) {  // The samples are probably the same
+                if (debouncer->counters[i] == keyscanner_debounce_cycles) {
+		    // If the debounced state is currently 'off'...
+		    // (It's more likely the case that by the time we hit this code path,
+		    //  the debounced state would be on. We'd only be toggling it
+		    //  the first time we got here after the counter filled)
+                    if (__builtin_expect( (debouncer->state ^ _BV(i)), EXPECT_FALSE) ) {  
                         // record the change to return to the caller
                         changes |= _BV(i);
                         // Toggle the debounced state.
@@ -71,14 +76,18 @@ static uint8_t debounce(uint8_t sample, debounce_t *debouncer) {
             // If the pin is off
         } else {
             // If the counter isn't bottomed out
-            if (__builtin_expect(( debouncer->counters[i] > 0), EXPECT_FALSE) ) {  // The counter is probably bottomed out
+	    // (It'll usually be bottomed out)
+            if (__builtin_expect(( debouncer->counters[i] > 0), EXPECT_FALSE) ) {
 
                 // Decrement the counter
                 debouncer->counters[i]--;
-                if(debouncer->counters[i] == 0 ) {
+                if (debouncer->counters[i] == 0 ) {
 
-                    // If the sample is different than the currently debounced state
-                    if (__builtin_expect(  (debouncer->state & _BV(i)), EXPECT_FALSE) ) {  // The samples are probably the same
+		    // If the debounced state is currently 'on'...
+		    // (It's more likely the case that by the time we hit this code path,
+		    //  the debounced state would be offf. We'd only be toggling it
+		    //  the first time we got here after the counter emptied
+                    if (__builtin_expect(  (debouncer->state & _BV(i)), EXPECT_FALSE) ) {
 
                         // record the change to return to the caller
                         changes |= _BV(i);
