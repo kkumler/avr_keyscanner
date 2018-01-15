@@ -22,7 +22,7 @@
 // a 4MHz SPI update frequency is the fastest we can drive the SPI
 // bus on an ATTiny88. That lets us update 32 LEDs in 1.6ms (Code compiled at -O3)
 // That's a bit faster than our 400KHz max I2C speed.
-#define LED_SPI_FREQUENCY_DEFAULT LED_SPI_FREQUENCY_4MHZ 
+#define LED_SPI_FREQUENCY_DEFAULT LED_SPI_FREQUENCY_4MHZ
 
 
 #define TWI_CMD_LED_BASE 0x80
@@ -38,7 +38,7 @@
  * Interval of 7 = 0.245ms
  * Interval of 10 = 0.3415ms
  * Interval of 50 = 1.585ms
- * 
+ *
  * Default to a minimum of 0.25ms or so between reads
  * That lets us take about 20 readings during a 'regular' 5ms debounce
  */

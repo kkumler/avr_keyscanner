@@ -84,7 +84,7 @@ void led_set_one_to(uint8_t led, uint8_t *buf) {
     DISABLE_INTERRUPTS({
         memcpy((uint8_t *)led_buffer.each[led], buf, LED_DATA_SIZE);
     });
-        led_data_ready();
+    led_data_ready();
 
 }
 
@@ -101,7 +101,7 @@ void led_set_all_to( uint8_t *buf) {
             memcpy((uint8_t *)led_buffer.each[led], buf, LED_DATA_SIZE);
         }
     });
-        led_data_ready();
+    led_data_ready();
 
 }
 

@@ -36,7 +36,7 @@ typedef struct {
  *                          0 ^ 1 = 1
  *                          1 ^ 0 = 1
  *                          1 ^ 1 = 0
- * 
+ *
  * This is used below as a difference detector:
  *   if A ^ B is true, A and B are different.
  *
