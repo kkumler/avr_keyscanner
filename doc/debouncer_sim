@@ -1,5 +1,4 @@
 
-
 print "GOOD-DATA:\n";
 handle_scans(
     [
@@ -20,8 +19,8 @@ handle_scans(
     ]
 );
 
-
 print "\n";
+
 sub handle_scans() {
     my $data = shift;
     print "DATA:    ";
@@ -30,21 +29,22 @@ sub handle_scans() {
     }
     print "\n";
     print "OLD:     ";
-my $db = debouncer->new();
+    my $db = debouncer->new();
     for my $entry (@$data) {
         handle_scan_orig( $entry, $db );
     }
     print "\n";
     print "NEW:     ";
- $db = debouncer->new();
+    $db = debouncer->new();
     my @counters;
     for my $entry (@$data) {
         handle_scan( $entry, $db );
-	push @counters, $db->counter();
+        push @counters, $db->counter();
     }
     print "\n";
-   print "THEIRS:  0000001111111111100000001111100000000111111111110000000001111111000\n";
-   print "COUNTERS:".join("",@counters) ."\n";
+    print
+"THEIRS:  0000001111111111100000001111100000000111111111110000000001111111000\n";
+    print "COUNTERS:" . join( "", @counters ) . "\n";
 
 }
 
@@ -107,15 +107,16 @@ sub debounce {
 
     $delta = $sample ^ $debouncer->state;
 
-        if ( $sample ^ 1) {
-		if ( $debouncer->counter>0) {
+    if ( $sample ^ 1 ) {
+        if ( $debouncer->counter > 0 ) {
             $debouncer->counter = $debouncer->counter - 1;
-        	} 
-	} else { 
-        if ($debouncer->counter<3)  {
+        }
+    }
+    else {
+        if ( $debouncer->counter < 3 ) {
             $debouncer->counter = $debouncer->counter + 1;
         }
-}
+    }
     if ( $delta & 1 ) {
         if ( $debouncer->counter == 0 || $debouncer->counter == 3 ) {
             $changes = 1;
