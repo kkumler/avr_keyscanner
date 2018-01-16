@@ -23,7 +23,7 @@ so for key 0, the counter is represented by db0[0] and db1[0]
 and the state in state[0].
 */
 typedef struct {
-    uint8_t counters[8];
+    int8_t counters[8];
     uint8_t state;  // debounced state
 } debounce_t;
 
@@ -63,17 +63,31 @@ static uint8_t debounce(uint8_t sample, debounce_t *debouncer) {
     for(int8_t i=0; i<=7; i++) {
         // If the pin is on
         if (__builtin_expect(( sample & _BV(i)), EXPECT_FALSE) ) {  // It's probably not on
-            // If we have not yet filled the counter
-	    // It'll usually not be filled
-            if (__builtin_expect(( debouncer->counters[i] < keyscanner_debounce_cycles ), EXPECT_TRUE) ) { 
+
+
+            // If the counter for this key is below the threshold
+	    // In this case, the threshold is half the number of cycles we need to debounce the switch + however
+	    // far we want to overscan before starting the journey back to "off"
+	    //
+	    // The overscan allows us to more easily 'lock out' key chatter events by ignoring 
+	    // state changes for longer after detecting an event on a specific key
+	    //
+            // It'll usually not be filled
+            if (__builtin_expect(( debouncer->counters[i] < keyscanner_debounce_cycles ), EXPECT_TRUE) ) {
                 //Increment the counter
                 debouncer->counters[i]++;
-                if (debouncer->counters[i] == keyscanner_debounce_cycles) {
-		    // If the debounced state is currently 'off'...
-		    // (It's more likely the case that by the time we hit this code path,
-		    //  the debounced state would be on. We'd only be toggling it
-		    //  the first time we got here after the counter filled)
-                    if (__builtin_expect( (debouncer->state ^ _BV(i)), EXPECT_FALSE) ) {  
+
+		// If the counter is at exactly the positivethreshold, then it's
+		// time to consider toggling the key state. 
+		// Note that we'll hit the threshold twice during the period when the
+		// switch should be on. Once on the way up and once on the way back down.
+
+                if (debouncer->counters[i] == (keyscanner_debounce_cycles/2)) {
+                    // If the debounced state is currently 'off'...
+                    // (It's more likely the case that by the time we hit this code path,
+                    //  the debounced state would be on. We'd only be toggling it
+                    //  the first time we got here after the counter filled)
+                    if (__builtin_expect( (debouncer->state ^ _BV(i)), EXPECT_FALSE) ) {
                         // record the change to return to the caller
                         changes |= _BV(i);
                         // Toggle the debounced state.
@@ -84,17 +98,22 @@ static uint8_t debounce(uint8_t sample, debounce_t *debouncer) {
             // If the pin is off
         } else {
             // If the counter isn't bottomed out
-	    // (It'll usually be bottomed out)
-            if (__builtin_expect(( debouncer->counters[i] > 0), EXPECT_FALSE) ) {
+            // (It'll usually be bottomed out)
+            if (__builtin_expect(( debouncer->counters[i] > (0 - keyscanner_debounce_cycles)), EXPECT_FALSE) ) {
 
                 // Decrement the counter
                 debouncer->counters[i]--;
-                if (debouncer->counters[i] == 0 ) {
 
-		    // If the debounced state is currently 'on'...
-		    // (It's more likely the case that by the time we hit this code path,
-		    //  the debounced state would be offf. We'd only be toggling it
-		    //  the first time we got here after the counter emptied
+		// If the counter is at exactly the negative threshold, then it's
+		// time to consider toggling the key state. 
+		// Note that we'll hit the threshold twice during the period when the
+		// switch should be off. Once on the way down and once on the way back up.
+                if (debouncer->counters[i] == (0-(keyscanner_debounce_cycles/2)) ) {
+
+                    // If the debounced state is currently 'on'...
+                    // (It's more likely the case that by the time we hit this code path,
+                    //  the debounced state would be offf. We'd only be toggling it
+                    //  the first time we got here after the counter emptied
                     if (__builtin_expect(  (debouncer->state & _BV(i)), EXPECT_FALSE) ) {
 
                         // record the change to return to the caller
