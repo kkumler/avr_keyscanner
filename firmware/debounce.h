@@ -6,7 +6,15 @@
 #define EXPECT_FALSE 0
 #define EXPECT_TRUE 1
 
-extern uint8_t keyscanner_debounce_cycles;
+
+// #define DEBOUNCE_MINIMUM_MS 5
+// #define KEYSCAN_INTERVAL_TO_MS_MULTIPLIER 0.032
+// #define KEYSCAN_TIME  (KEYSCAN_INTERVAL  * KEYSCAN_INTERVAL_TO_MS_MULTIPLIER)
+// #define DEBOUNCE_MINIMUM_CYCLES ((DEBOUNCE_MINIMUM_MS/KEYSCAN_TIME)+1)
+
+#define DEBOUNCE_MINIMUM_CYCLES 20 
+
+uint8_t keyscanner_debounce_cycles = DEBOUNCE_MINIMUM_CYCLES; 
 
 /*
 each of these 8 bit variables are storing the state for 8 keys
