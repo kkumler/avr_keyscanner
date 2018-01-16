@@ -64,12 +64,12 @@ void keyscanner_scan(void) {
     uint8_t pin_data;
 
     for(uint8_t i=0; i < 4; i++) {
-    // Read pin data
-    PORT_ROWS ^= _BV(i);
-    asm volatile("nop\n\t"::);
-    pin_data = PIN_COLS;
-    debounced_changes += debounce((pin_data), db + i);
-    PORT_ROWS ^= _BV(i);
+        // Read pin data
+        PORT_ROWS ^= _BV(i);
+        asm volatile("nop\n\t"::);
+        pin_data = PIN_COLS;
+        debounced_changes += debounce((pin_data), db + i);
+        PORT_ROWS ^= _BV(i);
 
     }
 
@@ -94,10 +94,10 @@ void keyscanner_scan(void) {
 }
 
 void keyscanner_main(void) {
-	if (do_scan) {
-	do_scan = 0;
-    	keyscanner_scan(); // Yes! Let's do a scan
-	}
+    if (do_scan) {
+        do_scan = 0;
+        keyscanner_scan(); // Yes! Let's do a scan
+    }
 }
 
 // initialize timer, interrupt and variable
@@ -121,5 +121,5 @@ void keyscanner_timer1_init(void) {
 
 // interrupt service routine (ISR) for timer 1 A compare match
 ISR(TIMER1_COMPA_vect) {
-	do_scan =1;
+    do_scan =1;
 }

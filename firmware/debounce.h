@@ -14,7 +14,7 @@
 
 #define DEBOUNCE_MINIMUM_CYCLES 6
 
-uint8_t keyscanner_debounce_cycles = DEBOUNCE_MINIMUM_CYCLES; 
+uint8_t keyscanner_debounce_cycles = DEBOUNCE_MINIMUM_CYCLES;
 
 /*
 each of these 8 bit variables are storing the state for 8 keys
@@ -66,21 +66,21 @@ static uint8_t debounce(uint8_t sample, debounce_t *debouncer) {
 
 
             // If the counter for this key is below the threshold
-	    // In this case, the threshold is half the number of cycles we need to debounce the switch + however
-	    // far we want to overscan before starting the journey back to "off"
-	    //
-	    // The overscan allows us to more easily 'lock out' key chatter events by ignoring 
-	    // state changes for longer after detecting an event on a specific key
-	    //
+            // In this case, the threshold is half the number of cycles we need to debounce the switch + however
+            // far we want to overscan before starting the journey back to "off"
+            //
+            // The overscan allows us to more easily 'lock out' key chatter events by ignoring
+            // state changes for longer after detecting an event on a specific key
+            //
             // It'll usually not be filled
             if (__builtin_expect(( debouncer->counters[i] < keyscanner_debounce_cycles ), EXPECT_TRUE) ) {
                 //Increment the counter
                 debouncer->counters[i]++;
 
-		// If the counter is at exactly the positivethreshold, then it's
-		// time to consider toggling the key state. 
-		// Note that we'll hit the threshold twice during the period when the
-		// switch should be on. Once on the way up and once on the way back down.
+                // If the counter is at exactly the positivethreshold, then it's
+                // time to consider toggling the key state.
+                // Note that we'll hit the threshold twice during the period when the
+                // switch should be on. Once on the way up and once on the way back down.
 
                 if (debouncer->counters[i] == (keyscanner_debounce_cycles/2)) {
                     // If the debounced state is currently 'off'...
@@ -104,10 +104,10 @@ static uint8_t debounce(uint8_t sample, debounce_t *debouncer) {
                 // Decrement the counter
                 debouncer->counters[i]--;
 
-		// If the counter is at exactly the negative threshold, then it's
-		// time to consider toggling the key state. 
-		// Note that we'll hit the threshold twice during the period when the
-		// switch should be off. Once on the way down and once on the way back up.
+                // If the counter is at exactly the negative threshold, then it's
+                // time to consider toggling the key state.
+                // Note that we'll hit the threshold twice during the period when the
+                // switch should be off. Once on the way down and once on the way back up.
                 if (debouncer->counters[i] == (0-(keyscanner_debounce_cycles/2)) ) {
 
                     // If the debounced state is currently 'on'...
