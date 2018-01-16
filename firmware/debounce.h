@@ -87,7 +87,7 @@ static uint8_t debounce(uint8_t sample, debounce_t *debouncer) {
                     // (It's more likely the case that by the time we hit this code path,
                     //  the debounced state would be on. We'd only be toggling it
                     //  the first time we got here after the counter filled)
-                    if (__builtin_expect( (debouncer->state ^ _BV(i)), EXPECT_FALSE) ) {
+                    if (__builtin_expect( (debouncer->state & _BV(i)), EXPECT_FALSE) ) {
                         // record the change to return to the caller
                         changes |= _BV(i);
                         // Toggle the debounced state.
@@ -114,7 +114,7 @@ static uint8_t debounce(uint8_t sample, debounce_t *debouncer) {
                     // (It's more likely the case that by the time we hit this code path,
                     //  the debounced state would be offf. We'd only be toggling it
                     //  the first time we got here after the counter emptied
-                    if (__builtin_expect(  (debouncer->state & _BV(i)), EXPECT_FALSE) ) {
+                    if (__builtin_expect(  (debouncer->state ^ _BV(i)), EXPECT_FALSE) ) {
 
                         // record the change to return to the caller
                         changes |= _BV(i);
