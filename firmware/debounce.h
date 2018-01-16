@@ -12,9 +12,17 @@
 // #define KEYSCAN_TIME  (KEYSCAN_INTERVAL  * KEYSCAN_INTERVAL_TO_MS_MULTIPLIER)
 // #define DEBOUNCE_MINIMUM_CYCLES ((DEBOUNCE_MINIMUM_MS/KEYSCAN_TIME)+1)
 
-#define DEBOUNCE_MINIMUM_CYCLES 6
+#define DEBOUNCE_COUNTER_LIMIT 6
+#define DEBOUNCE_THRESHOLD 3
 
-uint8_t keyscanner_debounce_cycles = DEBOUNCE_MINIMUM_CYCLES;
+
+
+
+static int8_t debounce_integrator_ceiling = DEBOUNCE_COUNTER_LIMIT;
+static int8_t debounce_integrator_floor = (0-DEBOUNCE_COUNTER_LIMIT);
+static int8_t debounce_toggle_on_threshold = DEBOUNCE_THRESHOLD;
+static int8_t debounce_toggle_off_threshold =  (0-DEBOUNCE_THRESHOLD);
+
 
 /*
 each of these 8 bit variables are storing the state for 8 keys
@@ -73,7 +81,7 @@ static uint8_t debounce(uint8_t sample, debounce_t *debouncer) {
             // state changes for longer after detecting an event on a specific key
             //
             // It'll usually not be filled
-            if (__builtin_expect(( debouncer->counters[i] < keyscanner_debounce_cycles ), EXPECT_TRUE) ) {
+            if (__builtin_expect(( debouncer->counters[i] < debounce_integrator_ceiling ), EXPECT_TRUE) ) {
                 //Increment the counter
                 debouncer->counters[i]++;
 
@@ -82,7 +90,7 @@ static uint8_t debounce(uint8_t sample, debounce_t *debouncer) {
                 // Note that we'll hit the threshold twice during the period when the
                 // switch should be on. Once on the way up and once on the way back down.
 
-                if (debouncer->counters[i] == (keyscanner_debounce_cycles/2)) {
+                if (debouncer->counters[i] == debounce_toggle_on_threshold) {
                     // If the debounced state is currently 'off'...
                     // (It's more likely the case that by the time we hit this code path,
                     //  the debounced state would be on. We'd only be toggling it
@@ -99,7 +107,7 @@ static uint8_t debounce(uint8_t sample, debounce_t *debouncer) {
         } else {
             // If the counter isn't bottomed out
             // (It'll usually be bottomed out)
-            if (__builtin_expect(( debouncer->counters[i] > (0 - keyscanner_debounce_cycles)), EXPECT_FALSE) ) {
+            if (__builtin_expect(( debouncer->counters[i] > debounce_integrator_floor), EXPECT_FALSE) ) {
 
                 // Decrement the counter
                 debouncer->counters[i]--;
@@ -108,7 +116,7 @@ static uint8_t debounce(uint8_t sample, debounce_t *debouncer) {
                 // time to consider toggling the key state.
                 // Note that we'll hit the threshold twice during the period when the
                 // switch should be off. Once on the way down and once on the way back up.
-                if (debouncer->counters[i] == (0-(keyscanner_debounce_cycles/2)) ) {
+                if (debouncer->counters[i] == debounce_toggle_off_threshold) {
 
                     // If the debounced state is currently 'on'...
                     // (It's more likely the case that by the time we hit this code path,
