@@ -94,6 +94,10 @@ void keyscanner_scan(void) {
 }
 
 void keyscanner_main(void) {
+	if (do_scan) {
+	do_scan = 0;
+    	keyscanner_scan(); // Yes! Let's do a scan
+	}
 }
 
 // initialize timer, interrupt and variable
@@ -117,5 +121,5 @@ void keyscanner_timer1_init(void) {
 
 // interrupt service routine (ISR) for timer 1 A compare match
 ISR(TIMER1_COMPA_vect) {
-    keyscanner_scan(); // Yes! Let's do a scan
+	do_scan =1;
 }
