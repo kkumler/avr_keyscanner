@@ -1,50 +1,86 @@
-
-print "GOOD-DATA:\n";
-handle_scans(
+use warnings;
+use strict;
+my $good_data = 
     [
         0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0,
         0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
         1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0,
-    ]
-);
-print "\n";
-print "CORRUPT-DATA:\n";
-handle_scans(
+    ];
+
+my $chatter_example = 
     [
         0, 1, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0,
         0, 0, 1, 1, 0, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1,
         1, 1, 0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1,
         0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0,
-    ]
-);
+    ];
+
+
+my $real_example = [ 
+0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0,
+1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1,
+1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1,
+1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 
+];
+if(1){
+print "GOOD-DATA:\n";
+handle_scans($good_data);
+    print "THEIRS:  0000001111111111100000001111100000000111111111110000000001111111000\n";
+    print "\nORIG:    " . join("",@$good_data);
+print "\n";
+print "CORRUPT-DATA:\n";
+handle_scans($chatter_example);
+    print "THEIRS:  0000001111111111100000001111100000000111111111110000000001111111000\n";
+    print "\nORIG:    " . join("",@$good_data);
+}
+print "\n\nREAL WORLD\n";
+handle_scans($real_example);
 
 print "\n";
 
 sub handle_scans() {
     my $data = shift;
-    print "DATA:    ";
-    for my $entry (@$data) {
-        print $entry;
-    }
-    print "\n";
-    print "OLD:     ";
+    print "DATA:    " . join("",@$data);
+    print "\nOLD:     ";
     my $db = debouncer->new();
     for my $entry (@$data) {
-        handle_scan_orig( $entry, $db );
+     	debounce_orig( $entry, $db );
+    	print  $db->state ;
     }
-    print "\n";
-    print "NEW:     ";
+
+    print "\nNEW:     ";
     $db = debouncer->new();
     my @counters;
     for my $entry (@$data) {
-        handle_scan( $entry, $db );
+    	 debounce( $entry, $db );
+    	print $db->state ;
         push @counters, $db->counter();
     }
+    #print "\n";
+    #print "COUNTERS:" . join( "", @counters ) . "\n";
+
+    print "\nOVERSCAN:";
+    my $db2 = debouncer->new();
+    my @counters2;
+    for my $entry (@$data) {
+    	 debounce_overscan( $entry, $db2 );
+    	print $db2->state ;
+        push @counters2, $db2->counter();
+    }
+
+
+   # print "\n";
+   # print "COUNTERS:" . join( "", @counters2 ) . "\n";
     print "\n";
-    print
-"THEIRS:  0000001111111111100000001111100000000111111111110000000001111111000\n";
-    print "COUNTERS:" . join( "", @counters ) . "\n";
+
+
+
+
 
 }
 
@@ -52,7 +88,8 @@ sub debounce_orig {
     my $sample    = shift;
     my $debouncer = shift;
 
-    my $state_has_changed, $changes;
+    my $state_has_changed;
+    my $changes;
 
     # Use xor to detect $changes from last stable state:
     # if a key has changed, it's bit will be 1, otherwise 0
@@ -63,8 +100,7 @@ sub debounce_orig {
 
     # If the current sample's state does not match the last debounced state
     # and the previous $debouncer state is either 0,0 or 1,1, set db1 to 1.
-    $debouncer->db1 =
-      ( ( $debouncer->db1 ) ^ ( $debouncer->db0 ) ) & $state_has_changed;
+    $debouncer->db1 = ( ( $debouncer->db1 ) ^ ( $debouncer->db0 ) ) & $state_has_changed;
 
     # increment bit 0 for all changed keys
     # Set db0 to 1 if it was previously 0 and is now 1?
@@ -82,20 +118,6 @@ sub debounce_orig {
 
     return $changes;
 
-}
-
-sub handle_scan {
-    my $sample  = shift;
-    my $db      = shift;
-    my $changes = debounce( $sample, $db );
-    print bits( $db->state );
-}
-
-sub handle_scan_orig {
-    my $sample  = shift;
-    my $db      = shift;
-    my $changes = debounce_orig( $sample, $db );
-    print bits( $db->state );
 }
 
 sub debounce {
@@ -129,9 +151,41 @@ sub debounce {
 
 }
 
-sub bits {
-    my $num = shift;
-    return $num;
+sub debounce_overscan {
+    my $sample    = shift;
+    my $debouncer = shift;
+
+    my $delta;
+    my $changes = 0;
+
+	my $ciel =8; 
+	my $floor = 0;
+	my $on_threshold =4;
+	my $off_threshold = 2;
+
+    $delta = $sample ^ $debouncer->state;
+
+    if ( $sample ==0 ) {
+        if ( $debouncer->counter > $floor ) {
+            $debouncer->counter = $debouncer->counter - 1;
+        if ( $debouncer->counter == $off_threshold && $delta ) {
+            $changes = 1;
+    	    $debouncer->state = 0;
+    }
+        }
+    } elsif ($sample ==1)  {
+        if ( $debouncer->counter < $ciel ) {
+            $debouncer->counter = $debouncer->counter + 1;
+        if ( $debouncer->counter == $on_threshold && $delta ) {
+            $changes = 1;
+    	    $debouncer->state = 1;
+        }
+        }
+    }
+
+
+    return $changes;
+
 }
 
 package debouncer;
