@@ -33,7 +33,7 @@ void twi_data_received(uint8_t *buf, uint8_t bufsiz) {
     case TWI_CMD_KEYSCAN_INTERVAL:
         if (bufsiz == 2 ) {
             // SET the delay
-            OCR1A = buf[1];
+            //OCR1A = buf[1];
         } else {
             // GET configuration
             twi_command = TWI_CMD_KEYSCAN_INTERVAL;
