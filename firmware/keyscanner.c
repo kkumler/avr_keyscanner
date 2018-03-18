@@ -57,9 +57,11 @@ void keyscanner_main(void) {
     uint8_t debounced_changes = 0;
     uint8_t pin_data;
 
-    if (__builtin_expect(do_scan == 0, 1)) {
+    if (do_scan==0) {
         return;
     }
+
+    do_scan = 0;
 
     // For each enabled row...
     for (uint8_t row = 0; row < ROW_COUNT; ++row) {
@@ -77,14 +79,6 @@ void keyscanner_main(void) {
 
     // Most of the time there will be no new key events
     if (__builtin_expect(debounced_changes == 0, 1)) {
-        // Only run the debouncing delay when we haven't successfully found
-        // a debounced event
-
-        // XXX TODO make sure this isn't crazy. could this 
-        // cause us to do reads too fast and mis-debounce
-        // some secondary key while we successfully debounce a
-        // first key.
-        do_scan = 0;
         return;
     }
 
