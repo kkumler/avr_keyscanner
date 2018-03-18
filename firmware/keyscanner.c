@@ -7,10 +7,22 @@
 #include "keyscanner.h"
 
 debounce_t db[] = {
-    {0x00, 0x00, 0xFF},
-    {0x00, 0x00, 0xFF},
-    {0x00, 0x00, 0xFF},
-    {0x00, 0x00, 0xFF}
+    {
+        {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
+        0x00
+    },
+    {
+        {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
+        0x00
+    },
+    {
+        {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
+        0x00
+    },
+    {
+        {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
+        0x00
+    }
 };
 
 // do_scan gets set any time we should actually do a scan
@@ -81,10 +93,10 @@ void keyscanner_main(void) {
     // when we read from the ringbuffer, we always get 
     // four bytes representing a single keyboard state.
     DISABLE_INTERRUPTS({
-        ringbuf_append( db[0].state ^ 0xff );
-        ringbuf_append( db[1].state ^ 0xff );
-        ringbuf_append( db[2].state ^ 0xff );
-        ringbuf_append( db[3].state ^ 0xff );
+        ringbuf_append( db[0].state );
+        ringbuf_append( db[1].state );
+        ringbuf_append( db[2].state );
+        ringbuf_append( db[3].state );
     });
 }
 
