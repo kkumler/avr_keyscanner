@@ -38,6 +38,29 @@ static volatile uint8_t global_brightness = 0xFF;
 
 static volatile uint8_t index; /* next byte to transmit */
 static volatile uint8_t subpixel = 0;
+static volatile uint8_t leds_dirty = 1;
+
+
+void led_data_ready() {
+    if(leds_dirty <2) {
+        leds_dirty++;
+    }
+    // Turn on SPI
+    SPCR |= _BV(SPIE);
+}
+
+/* this function updates our led data state. We use this to
+ * make sure that we update the LEDs  if there's any data that hasn't yet been
+ * sent. Because there's a potential race condition in the LED update state
+ * machine that could result in a skipped LED update if the LED buffer was
+ * updated during the 'start' frame, we let the dirty state variable
+ * go to 2.
+ *
+ * This means that there's a slight chance we'll update all the LEDs twice
+ * if we receive an update during the start frame, but that's better than
+ * missing a frame.
+ */
+
 
 /* Update the transmit buffer with LED_BUFSZ bytes of new data */
 void led_update_bank(uint8_t *buf, const uint8_t bank) {
@@ -50,12 +73,18 @@ void led_update_bank(uint8_t *buf, const uint8_t bank) {
     DISABLE_INTERRUPTS({
         memcpy((uint8_t *)led_buffer.bank[bank], buf, LED_BANK_SIZE);
     });
+    // Only do our update if we're updating bank 4
+    // this way we avoid 3 wasted LED updates
+    if (bank == NUM_LED_BANKS-1) {
+        led_data_ready();
+    }
 }
 
 void led_set_one_to(uint8_t led, uint8_t *buf) {
     DISABLE_INTERRUPTS({
         memcpy((uint8_t *)led_buffer.each[led], buf, LED_DATA_SIZE);
     });
+    led_data_ready();
 
 }
 
@@ -72,6 +101,7 @@ void led_set_all_to( uint8_t *buf) {
             memcpy((uint8_t *)led_buffer.each[led], buf, LED_DATA_SIZE);
         }
     });
+    led_data_ready();
 
 }
 
@@ -145,12 +175,16 @@ void led_init() {
 
 /* Each time a byte finishes transmitting, queue the next one */
 ISR(SPI_STC_vect) {
+
     switch(led_phase) {
     case START_FRAME:
         SPDR = 0;
         if(++index == 8) {
             led_phase = DATA;
             index = 0;
+            if (leds_dirty > 0) {
+                leds_dirty--;
+            }
         }
         break;
     case DATA:
@@ -178,6 +212,9 @@ ISR(SPI_STC_vect) {
         if(++index == 8) { /* NB: increase this number if ever >64 LEDs */
             led_phase = START_FRAME;
             index = 0;
+            if (leds_dirty ==0) {
+                SPCR &= ~_BV(SPIE);
+            }
         }
         break;
     }
