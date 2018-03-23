@@ -12,14 +12,14 @@
 debounce_t db[] = {
     {
         {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
-        0x00
+        0
     },
 };
 
 
 uint8_t scan_counter =0;
 uint8_t pin_data[4096] ={ };
-
+uint8_t debounced_data[4096] ={};
 
 
 #define BUFFERSIZE 8192
@@ -53,6 +53,9 @@ while( fgets(buffer, BUFFERSIZE , stdin) ) /* break with ^D or ^Z */
 void main(void) {
 	get_input();
 
+	uint8_t presses;
+	uint8_t releases;
+
 	uint8_t debounced_changes;
 	for (uint8_t sample = 0; sample < scan_counter; sample++) {
 
@@ -60,20 +63,40 @@ void main(void) {
 
 		debounced_changes= debounce(pin_data[sample], db);
 		printf("Sample %d: %d ",sample,pin_data[sample]);
-		printf("-> %d", db[0].state ^ 0xFF);
+		printf("-> %d", !(db[0].state & 1));
 	printf(" - counter %3d ", db[0].counters[0]);
 
 	if (pin_data[sample] != pin_data[sample-1]) {
 		printf(" input changed to %d", pin_data[sample]);
 	}
 	if (debounced_changes) {
-		printf(" state changed to %d" , db[0].state ^ 0xFF);
+		printf(" state changed to %d" , !(db[0].state & 1));
+		if (!(db[0].state & 1)) {
+			releases++;
+		} else {
+			presses++;
+		}
 
 	}
+
+	debounced_data[sample] = !( db[0].state & 1) ;
+
 	printf("\n");		
 	}
 
+	printf("Total presses: %d\nTotal releases: %d\n",presses,releases);
 	printf("\n");
+
+	for(uint8_t i =0; i< scan_counter; i++) {
+		printf("%d",pin_data[i]);
+	}
+	printf("\n");
+
+	for(uint8_t i =0; i< scan_counter; i++) {
+		printf("%d",debounced_data[i]);
+	}
+	printf("\n");
+
 
 	exit (0);
 }
