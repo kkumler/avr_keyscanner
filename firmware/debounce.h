@@ -37,12 +37,6 @@ typedef struct {
 
 /**
  * debounce --
- *    The debouncer is based on a stacked counter implementation, with each bit
- *    getting its own 2-bit counter. When a bit changes, a call to debounce
- *    will increment that bit's counter. When it overflows, the change is
- *    comitted to the final debounced state and the changed bit returned.
- *
- *    Because each key's counter and state are stored in this stacked way,
  *    8 keys are processed in parallel at each operation.
  *
  * args:
@@ -51,17 +45,6 @@ typedef struct {
  *
  * returns: bits that have changed in the final debounced state
  *
- * handy XOR truth table:   A   B   O
- *                          0 ^ 0 = 0
- *                          0 ^ 1 = 1
- *                          1 ^ 0 = 1
- *                          1 ^ 1 = 0
- * 
- * This is used below as a difference detector:
- *   if A ^ B is true, A and B are different.
- *
- * And a way to flip selected bits in a variable or register:
- *   Set B to 1, then A ^ B = !A
  */
 static uint8_t debounce(uint8_t sample, debounce_t *debouncer) {
     uint8_t changes = 0;
