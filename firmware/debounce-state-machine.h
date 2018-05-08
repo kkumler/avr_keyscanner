@@ -119,9 +119,9 @@ lifecycle_phase_t lifecycle[] = {
         // In the event of unexpected data, stay in the LOCKED_OFF phase, but don't reset the timer.
         .next_phase = OFF,
         .expected_data = 0,
-        .unexpected_data_phase =  NOISY_SWITCH_LOCKED_OFF,
+        .unexpected_data_phase =  LOCKED_OFF,
         .change_output_on_expected_transition = CHANGE_OUTPUT,
-        .timer = 10,
+        .timer = 0,
     },
     {
         // NOISY_SWITCH_OFF -- during this phase, any 'off' value means that we should keep this key pressed
