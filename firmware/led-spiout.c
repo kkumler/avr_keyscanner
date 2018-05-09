@@ -175,6 +175,7 @@ void led_set_spi_frequency(uint8_t frequency) {
     case LED_SPI_FREQUENCY_128KHZ:
     case LED_SPI_FREQUENCY_64KHZ:
         SPCR |= _BV(SPR0);
+	// fall through
     
    // This value wants ONLY SPR1 set, not SPR0 
     case LED_SPI_FREQUENCY_256KHZ:
