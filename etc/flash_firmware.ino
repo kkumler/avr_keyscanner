@@ -273,12 +273,11 @@ byte update_attiny(byte addr) {
     return 1;
 }
 
+int left_written = 0;
+int right_written = 0;
+
 void loop() {
     delay(5000);
-
-    int left_written = 0;
-    int right_written = 0;
-
 
     if (left_written > 0) {
         debug_msg(F("Done with left side.\n"));
