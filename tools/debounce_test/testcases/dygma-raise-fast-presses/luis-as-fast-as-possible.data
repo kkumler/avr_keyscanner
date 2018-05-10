@@ -1,6 +1,6 @@
 #SAMPLES-PER-SECOND: 2000
 #TITLE: testcases/raise-luis/key-a--5-presses-fast
-#PRESSES: 5
+#PRESSES: 34
 
 # Off for 419 cycles
 00000 00000 00000 00000 00000 00000 00000 00000
