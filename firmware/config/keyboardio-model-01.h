@@ -26,6 +26,7 @@
 //#define DEBOUNCER "debounce-split-counters.h"
 #define DEBOUNCER "debounce-state-machine.h"
 #define DEBOUNCE_STATE_MACHINE "config/debounce-state-machines/chatter-defense.h"
+//#define DEBOUNCE_STATE_MACHINE "config/debounce-state-machines/simple.h"
 
 
 // Should we be treating our columns as outputs or our rows?
