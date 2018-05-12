@@ -7,7 +7,7 @@ use IPC::Open3;
 
 my @testcases = `ls testcases/*/*`;
 
-my @debouncers = `find ./debounce-* ./debounce-state-machines/* -type f`;
+my @debouncers = `find ./debounce-* -type f`;
 
 if (@ARGV) {
     @debouncers = ();
