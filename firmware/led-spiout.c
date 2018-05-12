@@ -37,6 +37,10 @@ static volatile enum {
 } led_phase;
 
 #define BRIGHTNESS_MASK	0b11100000
+
+#define ENABLE_LED_WRITES SPCR |= _BV(SPIE);
+#define DISABLE_LED_WRITES SPCR &= ~_BV(SPIE);
+
 static volatile uint8_t global_brightness = 0xFF;
 
 static volatile uint8_t index; /* next byte to transmit */
@@ -48,8 +52,7 @@ void led_data_ready() {
     if(leds_dirty <2) {
         leds_dirty++;
     }
-    // Turn on SPI
-    SPCR |= _BV(SPIE);
+    ENABLE_LED_WRITES;
 }
 
 /* this function updates our led data state. We use this to
@@ -242,7 +245,7 @@ ISR(SPI_STC_vect) {
             led_phase = START_FRAME;
             index = 0;
             if (leds_dirty ==0) {
-                SPCR &= ~_BV(SPIE);
+		DISABLE_LED_WRITES;
             }
         }
         break;

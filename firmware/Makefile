@@ -60,7 +60,7 @@ OPTIMIZATION = -O3
 
 
 AVRDUDE = $(AVRDUDE_PATH) $(PROGRAMMER) -p $(DEVICE)
-COMPILE = $(GCC_PATH) -Wall -Wextra $(OPTIMIZATION) -std=gnu11 -flto -mmcu=$(DEVICE) -DF_CPU=$(CLOCK) -include "config/$(PRODUCT_ID).h" -save-temps -fverbose-asm -g
+COMPILE = $(GCC_PATH) -Wall -Wextra $(OPTIMIZATION) -std=gnu11 -flto -mmcu=$(DEVICE) -DF_CPU=$(CLOCK) -include "config/$(PRODUCT_ID).h" -fverbose-asm -g
 
 # symbolic targets:
 all:	$(HEX_FILE_PATH)
