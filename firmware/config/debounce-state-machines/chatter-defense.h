@@ -1,6 +1,7 @@
-#pragma once
-#include "datastructures.h"
 
+// All state machine configs use the same guard -- we only want one at a time.
+#ifndef _DEBOUNCER_STATE_MACHINE_CONFIG_H
+#define _DEBOUNCER_STATE_MACHINE_CONFIG_H
 
 enum lifecycle_phases {
     OFF, TURNING_ON, LOCKED_ON, ON, TURNING_OFF, LOCKED_OFF,
@@ -177,3 +178,5 @@ lifecycle_phase_t lifecycle[] = {
         .timer = 30
     }
 };
+
+#endif
