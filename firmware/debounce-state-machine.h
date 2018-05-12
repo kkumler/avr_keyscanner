@@ -27,13 +27,10 @@ enum lifecycle_phases {
 };
 
 typedef struct {
-    uint8_t
-    next_phase: 4,
-                unexpected_data_phase: 4;
-    uint8_t
-    expected_data;
-    uint8_t
-    change_output_on_expected_transition;
+    uint8_t next_phase;
+    uint8_t unexpected_data_phase;
+    uint8_t expected_data;
+    uint8_t change_output_on_expected_transition;
     uint8_t timer;
 } lifecycle_phase_t;
 
