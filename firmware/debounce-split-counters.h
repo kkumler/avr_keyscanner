@@ -154,8 +154,7 @@ uint8_t debounce(uint8_t sample, debounce_t *debouncer) {
         state_changed &= ~debouncer->last_changes;
 
     // foreach bit in counter_bits
-    for(uint8_t i=0; i<NUM_COUNTER_BITS; i++)
-    {
+    for(uint8_t i=0; i<NUM_COUNTER_BITS; i++) {
         // increment the counter if state changed, else reset the counter to zero.
         // after simplification, we increment by flipping the bits one by one
         // stopping after getting a 1.
@@ -183,16 +182,16 @@ uint8_t debounce(uint8_t sample, debounce_t *debouncer) {
         //       of (2).
         if (i < _NUM_BITS(DEBOUNCE_PRESS_DELAY_COUNT))
             waited_for_press_delay &= (
-                ((DEBOUNCE_PRESS_DELAY_COUNT + 1) & _BV(i)) ?
-                debouncer->counter_bits[i] :
-                ~debouncer->counter_bits[i]);
+                                          ((DEBOUNCE_PRESS_DELAY_COUNT + 1) & _BV(i)) ?
+                                          debouncer->counter_bits[i] :
+                                          ~debouncer->counter_bits[i]);
 
         // ditto
         if (i < _NUM_BITS(DEBOUNCE_RELEASE_DELAY_COUNT))
             waited_for_release_delay &= (
-                ((DEBOUNCE_RELEASE_DELAY_COUNT + 1) & _BV(i)) ?
-                debouncer->counter_bits[i] :
-                ~debouncer->counter_bits[i]);
+                                            ((DEBOUNCE_RELEASE_DELAY_COUNT + 1) & _BV(i)) ?
+                                            debouncer->counter_bits[i] :
+                                            ~debouncer->counter_bits[i]);
     }
 
     // change key state if state_changed and we waited for press or release delay

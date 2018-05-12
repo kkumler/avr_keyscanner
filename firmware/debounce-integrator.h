@@ -27,7 +27,7 @@ typedef struct {
     int8_t counters[8];
     int8_t key_locked_out[8];
     uint8_t state;  // debounced state
-    uint8_t last_state; 
+    uint8_t last_state;
 } debounce_t;
 
 
@@ -45,12 +45,12 @@ typedef struct {
 
 
 
-//  If a key has been on for two cycles (1ms) but less than 12 cycles (5ms) then 
+//  If a key has been on for two cycles (1ms) but less than 12 cycles (5ms) then
 //      	for the next (10 cycles) 5ms, we treat every scan as ON.
-//  
+//
 //  If a key has toggled off
 //  	treat any event in the next 5ms (10 cycles) as "off"
-//  
+//
 
 
 static uint8_t debounce(uint8_t sample, debounce_t *debouncer) {
@@ -59,23 +59,23 @@ static uint8_t debounce(uint8_t sample, debounce_t *debouncer) {
     // Scan each pin from the bank
     for(int8_t i=0; i< COUNT_INPUT; i++) {
         if (sample & _BV(i)) {
-    	    if (debouncer->counters[i] < debounce_integrator_ceiling) {
-                    debouncer->counters[i]++;
-               	    if (debouncer->counters[i] == debounce_toggle_on_threshold &&	
-    	      	    	debouncer->state ^ _BV(i) ) {
-               		changes |= _BV(i);
-    	    	    }
-			if (debouncer->counters[i] > 2 ) 
-				debouncer->counters[i] += 13;
-	    }
+            if (debouncer->counters[i] < debounce_integrator_ceiling) {
+                debouncer->counters[i]++;
+                if (debouncer->counters[i] == debounce_toggle_on_threshold &&
+                        debouncer->state ^ _BV(i) ) {
+                    changes |= _BV(i);
+                }
+                if (debouncer->counters[i] > 2 )
+                    debouncer->counters[i] += 13;
+            }
         } else if ( debouncer->counters[i] > debounce_integrator_floor )  {
             debouncer->counters[i]--;
             if (debouncer->counters[i] == debounce_toggle_off_threshold &&
-	      	debouncer->state & _BV(i) ) {
-            	changes |= _BV(i);
-		//debouncer->counters[i] = -18;
-	    }
-	    
+                    debouncer->state & _BV(i) ) {
+                changes |= _BV(i);
+                //debouncer->counters[i] = -18;
+            }
+
         }
 
     }

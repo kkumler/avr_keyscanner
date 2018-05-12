@@ -27,10 +27,10 @@
 ****************************************************************************/
 
 // Called to solicit data for transmission
-extern void (*TWI_Tx_Data_Callback)( unsigned char * , unsigned char * );
+extern void (*TWI_Tx_Data_Callback)( unsigned char *, unsigned char * );
 
 // Called to provide received data
-extern void (*TWI_Rx_Data_Callback)( unsigned char * , unsigned char );
+extern void (*TWI_Rx_Data_Callback)( unsigned char *, unsigned char );
 
 /****************************************************************************
   Function definitions

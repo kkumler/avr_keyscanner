@@ -36,12 +36,12 @@ void twi_data_received(uint8_t *buf, uint8_t bufsiz) {
     }
 
     twi_command = buf[0];
-    if (bufsiz > 1) 
-	   twi_command = TWI_CMD_NONE;
-	
+    if (bufsiz > 1)
+        twi_command = TWI_CMD_NONE;
+
     switch (buf[0]) {
     case TWI_CMD_LED_UPDATE_ALL:
-	led_update_all(&buf[1]);
+        led_update_all(&buf[1]);
         break;
 
     case TWI_CMD_KEYSCAN_INTERVAL:
@@ -50,29 +50,29 @@ void twi_data_received(uint8_t *buf, uint8_t bufsiz) {
         break;
 
     case TWI_CMD_LED_SPI_FREQUENCY:
-        if (bufsiz == 2 ) 
+        if (bufsiz == 2 )
             led_set_spi_frequency(buf[1]);
         break;
 
 
     case TWI_CMD_LED_SET_ALL_TO:
-        if (bufsiz == 4 ) 
+        if (bufsiz == 4 )
             led_set_all_to(&buf[1]);
-        
+
         break;
 
     case TWI_CMD_LED_SET_ONE_TO:
-        if (bufsiz == 5 ) 
+        if (bufsiz == 5 )
             led_set_one_to(buf[1],&buf[2]);
         break;
 
     case TWI_CMD_LED_GLOBAL_BRIGHTNESS:
-	led_set_global_brightness(buf[1]);
-	break;
+        led_set_global_brightness(buf[1]);
+        break;
 
     case TWI_CMD_VERSION:
     case TWI_CMD_KEYDATA_SIZE:
-	break;
+        break;
 
     }
 }
@@ -82,8 +82,8 @@ uint8_t key_substate;
 void twi_data_requested(uint8_t *buf, uint8_t *bufsiz) {
     if (__builtin_expect(*bufsiz != 0, EXPECT_TRUE)) {
 
-	// Almost every command has a bufsiz of 1.
-	// populate the default and only set it when we want to change it.
+        // Almost every command has a bufsiz of 1.
+        // populate the default and only set it when we want to change it.
         *bufsiz=1;
         switch (twi_command) {
         case TWI_CMD_NONE:
@@ -96,18 +96,18 @@ void twi_data_requested(uint8_t *buf, uint8_t *bufsiz) {
                 buf[0]=TWI_REPLY_NONE;
             } else {
                 buf[0]=TWI_REPLY_KEYDATA;
-		for(int i = 1;i<= KEY_REPORT_SIZE_BYTES; i++) {
+                for(int i = 1; i<= KEY_REPORT_SIZE_BYTES; i++) {
                     ringbuf_pop_to(buf+i);
-		}
+                }
                 *bufsiz=(KEY_REPORT_SIZE_BYTES+1);
             }
             break;
         case TWI_CMD_VERSION:
             buf[0] = DEVICE_VERSION;
             break;
-	case TWI_CMD_KEYDATA_SIZE:
-	    buf[0] = KEY_REPORT_SIZE_BYTES;
-	    break;
+        case TWI_CMD_KEYDATA_SIZE:
+            buf[0] = KEY_REPORT_SIZE_BYTES;
+            break;
         case TWI_CMD_KEYSCAN_INTERVAL:
             buf[0] = keyscanner_get_interval();
             break;

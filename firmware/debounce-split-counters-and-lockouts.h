@@ -45,7 +45,7 @@ time ~= 1 * 20 * 256 * (1 / 8000000) = 0.99 ms
 /*
 each of these 8 bit variables are storing the state for 8 keys
 
-so for key 0, the counter is represented by db0[0] and db1[0] 
+so for key 0, the counter is represented by db0[0] and db1[0]
 and the state in state[0].
 */
 typedef struct {
@@ -61,33 +61,24 @@ static uint8_t debounce(uint8_t sample, debounce_t *debouncer) {
     if (justchanged)
         debouncer->lastsample = sample;
 
-    for(int8_t i=0; i< COUNT_INPUT; i++)
-    {
-        if (justchanged & _BV(i))
-        {
+    for(int8_t i=0; i< COUNT_INPUT; i++) {
+        if (justchanged & _BV(i)) {
             // unstable, reset stability counter
-            if (debouncer->counters[i] >= 0) // begin/reset counter "BEFORE" a change
-            {
+            if (debouncer->counters[i] >= 0) { // begin/reset counter "BEFORE" a change
                 if (debouncer->state & _BV(i)) // registered state is pressed, so key is releasing
                     debouncer->counters[i] = DEBOUNCE_BEFORE_RELEASE_DELAY_COUNT - 1;
                 else
                     debouncer->counters[i] = DEBOUNCE_BEFORE_PRESS_DELAY_COUNT - 1;
-            }
-            else // still within the "AFTER" delay
-            {
+            } else { // still within the "AFTER" delay
                 if (debouncer->state & _BV(i)) // registered state is pressed
                     debouncer->counters[i] = -(DEBOUNCE_AFTER_PRESS_DELAY_COUNT - 1);
                 else
                     debouncer->counters[i] = -(DEBOUNCE_AFTER_RELEASE_DELAY_COUNT - 1);
             }
-        }
-        else if (debouncer->counters[i] != 0)
-        {
+        } else if (debouncer->counters[i] != 0) {
             // stabilizing, converge to 0
             debouncer->counters[i] -= debouncer->counters[i] > 0 ? 1 : -1;
-        }
-        else if (statechanged & _BV(i))
-        {
+        } else if (statechanged & _BV(i)) {
             if (debouncer->state & _BV(i)) // last registered state was pressed, so key is releasing
                 debouncer->counters[i] = -(DEBOUNCE_AFTER_RELEASE_DELAY_COUNT - 1);
             else

@@ -86,7 +86,7 @@ void led_update_bank(uint8_t *buf, const uint8_t bank) {
     }
 }
 
-/* Update the transmit buffer with LED_BUFSZ bytes of new data 
+/* Update the transmit buffer with LED_BUFSZ bytes of new data
  *
  * TODO: This MAY run afoul of Arduino's data size limit for an i2c transfer
  *
@@ -108,12 +108,12 @@ void led_set_one_to(uint8_t led, uint8_t *buf) {
 }
 
 void led_set_global_brightness(uint8_t brightness) {
-	// Legal brightness inputs are 0 to 31.
-	// But the output we want has the 3 high bytes set anyway
-	// So ORing our input with the brightness mask limits 
-	// the input to 31.
-	
-	global_brightness = BRIGHTNESS_MASK | brightness;
+    // Legal brightness inputs are 0 to 31.
+    // But the output we want has the 3 high bytes set anyway
+    // So ORing our input with the brightness mask limits
+    // the input to 31.
+
+    global_brightness = BRIGHTNESS_MASK | brightness;
 }
 
 void led_set_all_to( uint8_t *buf) {
@@ -126,8 +126,8 @@ void led_set_all_to( uint8_t *buf) {
 
 }
 
-void led_set_all_off (void){
-	memset((uint8_t*)led_buffer.whole, 0, sizeof(led_buffer.whole));
+void led_set_all_off (void) {
+    memset((uint8_t*)led_buffer.whole, 0, sizeof(led_buffer.whole));
 }
 
 inline uint8_t led_get_spi_frequency() {
@@ -167,20 +167,20 @@ void led_set_spi_frequency(uint8_t frequency) {
     case LED_SPI_OFF:
         SPCR = 0x00;
         break;
-	    // These values want SPR0 but not SPR1
+    // These values want SPR0 but not SPR1
     case LED_SPI_FREQUENCY_1MHZ:
     case LED_SPI_FREQUENCY_512KHZ:
         SPCR |= _BV(SPR0);
         break;
 
-    // These values want SPR0 AND SPR1, so 
+    // These values want SPR0 AND SPR1, so
     // no break at the end of this case. let it cascade through
     case LED_SPI_FREQUENCY_128KHZ:
     case LED_SPI_FREQUENCY_64KHZ:
         SPCR |= _BV(SPR0);
-	// fall through
-    
-   // This value wants ONLY SPR1 set, not SPR0 
+    // fall through
+
+    // This value wants ONLY SPR1 set, not SPR0
     case LED_SPI_FREQUENCY_256KHZ:
         SPCR |= _BV(SPR1);
 
@@ -237,15 +237,15 @@ ISR(SPI_STC_vect) {
         break;
 
     case END_FRAME:
-	// The pwm reset frame needs to be 32 bits of 0 for SK9822 based LEDS
-	// After that, we need at num_leds/2 more bits of 0 
-	// For up to 64 LEDs, that means 64 bits of 0
+        // The pwm reset frame needs to be 32 bits of 0 for SK9822 based LEDS
+        // After that, we need at num_leds/2 more bits of 0
+        // For up to 64 LEDs, that means 64 bits of 0
         SPDR = 0x00;
         if(++index == 8) { /* NB: increase this number if ever >64 LEDs */
             led_phase = START_FRAME;
             index = 0;
             if (leds_dirty ==0) {
-		DISABLE_LED_WRITES;
+                DISABLE_LED_WRITES;
             }
         }
         break;

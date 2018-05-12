@@ -6,7 +6,7 @@
 /*
 each of these 8 bit variables are storing the state for 8 keys
 
-so for key 0, the counter is represented by db0[0] and db1[0] 
+so for key 0, the counter is represented by db0[0] and db1[0]
 and the state in state[0].
 */
 typedef struct {
@@ -37,7 +37,7 @@ typedef struct {
  *                          0 ^ 1 = 1
  *                          1 ^ 0 = 1
  *                          1 ^ 1 = 0
- * 
+ *
  * This is used below as a difference detector:
  *   if A ^ B is true, A and B are different.
  *
