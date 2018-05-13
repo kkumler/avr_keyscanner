@@ -48,14 +48,6 @@ void reset_right_attiny() {
 }
 
 
-int run_command(uint8_t address, byte command) {
-    // erase user space, dummy end uint8_t
-    byte data[] = {command, 0x00};
-    uint8_t result = twi_writeTo(address, data, ELEMENTS(data), true, true);
-
-    debug_print_result(result);
-    return result;
-}
 
 
 
@@ -262,7 +254,11 @@ byte update_attiny(byte addr) {
     }
 
     debug_print(F("Resetting "));
-    run_command(addr, 0x03); // execute app
+
+    // execute app
+    uint8_t data[] = {0x03, 0x00};
+    uint8_t result = twi_writeTo(addr, data, ELEMENTS(data), true, true);
+    debug_print_result(result);
     debug_print(F("Done!\n"));
 
     return 1;
