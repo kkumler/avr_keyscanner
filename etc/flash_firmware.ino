@@ -170,8 +170,9 @@ int write_firmware(uint8_t addr ) {
             data[data_counter++] = (0x00); // dummy end uint8_t
 
             result = twi_writeTo(addr, data, ELEMENTS(data), true, true);
-            debug_print(F(",Frame "));
+            debug_print(F("Frame "));
             debug_print(frame);
+            debug_print(F(" "));
             debug_print_result(result);
             // got something other than NACK. Start over.
             if (result != ENDTRANS_DATA_NACK) {
@@ -199,7 +200,7 @@ int verify_firmware(byte addr) {
         // skip the first 4 bytes, are they were probably overwritten by the reset vector preservation
         result = read_crc16(addr, &version, &crc16, offsets[0] + 4, firmware_length - 4);
 
-        debug_print(result);
+        debug_print_result(result);
 
         if (result != ENDTRANS_SUCCESS) {
             _delay_ms(100);
