@@ -8,21 +8,24 @@ extern "C" {
 
 #define ELEMENTS(arr)  (sizeof(arr) / sizeof((arr)[0]))
 
-
-void setup() {
-    delay(5000);
-    twi_init();
-}
-
-
 #define ENDTRANS_SUCCESS 0
 #define ENDTRANS_DATA_TOO_LONG 1
 #define ENDTRANS_ADDR_NACK 2
 #define ENDTRANS_DATA_NACK 3
 #define ENDTRANS_ERROR 4
 
-#define debug_print(...)   Serial.print(__VA_ARGS__)
+#define debug_print(...) Serial.print(__VA_ARGS__)
 
+void debug_print_result(uint8_t result) {
+    debug_print(F("(result = "));
+    debug_print(result,DEC);
+    debug_print(F(")\n"));
+}
+
+void setup() {
+    delay(2000);
+    twi_init();
+}
 
 // The LEFT ATTiny has a reset pin directly connected to the ATMega
 void reset_left_attiny() {
@@ -44,21 +47,13 @@ void reset_right_attiny() {
     PORTC |= _BV(7); // Turn the ATTiny back on
 }
 
-void debug_print_result(uint8_t result) {
-    debug_print(F("result = "));
-    debug_print(result);
-
-}
 
 int run_command(uint8_t address, byte command) {
-
-// erase user space, dummy end uint8_t
+    // erase user space, dummy end uint8_t
     byte data[] = {command, 0x00};
     uint8_t result = twi_writeTo(address, data, ELEMENTS(data), true, true);
 
-	
     debug_print_result(result);
-    debug_print("\n");
     return result;
 }
 
@@ -99,22 +94,22 @@ void get_version (byte addr) {
 
     byte result = ENDTRANS_ADDR_NACK;
     while (result != ENDTRANS_SUCCESS) {
-        debug_print(F("\nReading CRC16: "));
+        debug_print(F("Reading CRC16: "));
 
         byte version;
         uint16_t crc16;
         result = read_crc16(addr, &version, &crc16, 0, firmware_length);
-
         debug_print_result(result);
-	
+
         if (result != ENDTRANS_SUCCESS) {
             _delay_ms(100);
             continue;
         }
-        debug_print(F("\nVersion: "));
+        debug_print(F("Version: "));
         debug_print(version);
         debug_print(F("\nExisting CRC16 of 0000-1FFF: "));
         debug_print(crc16, HEX);
+	debug_print(F("\n"));
     }
 
 }
@@ -122,11 +117,11 @@ void get_version (byte addr) {
 
 
 int erase_program(uint8_t addr) {
-// erase user space
+    // erase user space
     uint8_t data[] = { 0x04 };
     uint8_t result = twi_writeTo(addr, data, ELEMENTS(data), true, true);
 
-    debug_print(F("\nErasing: "));
+    debug_print(F("Erasing: "));
     debug_print_result(result);
     if (result != ENDTRANS_SUCCESS) {
         _delay_ms(1000);
@@ -144,11 +139,11 @@ int write_firmware(uint8_t addr ) {
     uint8_t o = 0;
 
     for (uint16_t i = 0; i < firmware_length; i += page_size) {
-        debug_print(F("\nPage "));
+        debug_print(F("Page "));
         debug_print(offsets[o]);
-        debug_print(F(" setting address: "));
+        debug_print(F(" setting address "));
 
-// write page addr
+        // write page addr
         uint8_t data[] = { 0x01, (uint8_t)(offsets[o] & 0xff), (uint8_t)(offsets[o] >> 8)};
         result = twi_writeTo(addr, data, ELEMENTS(data), true, true);
         debug_print_result(result);
@@ -156,7 +151,7 @@ int write_firmware(uint8_t addr ) {
         _delay_ms(DELAY);
         // got something other than ACK. Start over.
         if (result != ENDTRANS_SUCCESS) {
-            debug_print(F("Error\n"));
+            debug_print(F("\nFailed\n"));
             return -1;
         }
 
@@ -183,9 +178,8 @@ int write_firmware(uint8_t addr ) {
             data[data_counter++] = (0x00); // dummy end uint8_t
 
             result = twi_writeTo(addr, data, ELEMENTS(data), true, true);
-            debug_print(F("Frame "));
+            debug_print(F(",Frame "));
             debug_print(frame);
-	    debug_print(F(": "));
             debug_print_result(result);
             // got something other than NACK. Start over.
             if (result != ENDTRANS_DATA_NACK) {
@@ -194,6 +188,7 @@ int write_firmware(uint8_t addr ) {
             }
             delay(DELAY);
         }
+	debug_print(F("\n"));
         o++;
     }
     return 0;
@@ -205,7 +200,7 @@ int verify_firmware(byte addr) {
     // verify firmware
     debug_print(F("Verifying install\n"));
     while (result != ENDTRANS_SUCCESS) {
-        debug_print(F("CRC16: "));
+        debug_print(F("CRC16 "));
 
         byte version;
         uint16_t crc16;
@@ -218,7 +213,7 @@ int verify_firmware(byte addr) {
             _delay_ms(100);
             continue;
         }
-        debug_print(F("\nVersion: "));
+        debug_print(F("Version: "));
         debug_print(version);
         debug_print(F("\nCRC CRC16 of "));
         debug_print(offsets[0] + 4, HEX);
@@ -226,7 +221,7 @@ int verify_firmware(byte addr) {
         debug_print(offsets[0] + firmware_length, HEX);
         debug_print(F(": "));
         debug_print(crc16, HEX);
-
+	debug_print(F("\n"));
         // calculate our own CRC16
         uint16_t check_crc16 = 0xffff;
         for (uint16_t i = 4; i < firmware_length; i++) {
@@ -237,7 +232,7 @@ int verify_firmware(byte addr) {
             debug_print(check_crc16, HEX);
             return -1;
         }
-        debug_print(F(": OK\n"));
+        debug_print(F("OK\n"));
     }
     return 0;
 }
@@ -256,17 +251,17 @@ byte update_attiny(byte addr) {
 
     int firmware_written = write_firmware(addr);
     if(firmware_written == -1) {
-        debug_print(F("Failed.\n"));
+        debug_print(F("Write failed.\n"));
         return 0;
     }
 
     int firmware_verified = verify_firmware(addr);
     if(firmware_verified == -1) {
-        debug_print(F("Failed.\n"));
+        debug_print(F("Verify failed.\n"));
         return 0;
     }
 
-    debug_print(F("Resetting: "));
+    debug_print(F("Resetting "));
     run_command(addr, 0x03); // execute app
     debug_print(F("Done!\n"));
 
@@ -277,7 +272,7 @@ int left_written = 0;
 int right_written = 0;
 
 void loop() {
-    delay(5000);
+    delay(2000);
 
     if (left_written > 0) {
         debug_print(F("Done with left side.\n"));
