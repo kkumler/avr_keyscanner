@@ -41,7 +41,7 @@ static volatile enum {
 #define BRIGHTNESS_MASK	0b11100000
 
 #define ENABLE_LED_WRITES SPCR |= _BV(SPIE);
-#define DISABLE_LED_WRITES SPCR &= ~_BV(SPIE);
+#define DISABLE_LED_WRITES  // SPCR &= ~_BV(SPIE);
 
 static volatile uint8_t global_brightness = 0xFF;
 
