@@ -4,16 +4,6 @@
 #include "wire-protocol-constants.h"
 #define TWI_BASE_ADDRESS     0x58
 
-typedef union {
-    struct {
-        uint8_t row:2,
-                col:3,
-                keyState:1,
-                keyEventsWaiting:1,
-                eventReported:1;
-    };
-    uint8_t val;
-} state_t;
 
 #define DEVICE_VERSION 3
 
