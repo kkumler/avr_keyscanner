@@ -52,7 +52,7 @@ lifecycle_phase_t lifecycle[] = {
         .expected_data = 1,
         .unexpected_data_phase = NOISY_SWITCH_LOCKED_ON,
         .change_output_on_expected_transition = CHANGE_OUTPUT,
-        .timer = 14,
+        .timer = 10,
     },
     {
         // ON -- during this phase, any 'on' value means that we should keep this key pressed
@@ -122,7 +122,7 @@ lifecycle_phase_t lifecycle[] = {
         .next_phase = NOISY_SWITCH_LOCKED_ON,
         .expected_data = 1,
         .unexpected_data_phase = NOISY_SWITCH_OFF,
-        .timer = 2
+        .timer = 1
     },
     {
         // NOISY_SWITCH_LOCKED_ON -- during this phase, the key is on, no matter what value we read from the input
@@ -135,7 +135,7 @@ lifecycle_phase_t lifecycle[] = {
         .expected_data = 1,
         .unexpected_data_phase = NOISY_SWITCH_LOCKED_ON,
         .change_output_on_expected_transition = CHANGE_OUTPUT,
-        .timer = 45
+        .timer = 100
     },
     {
         // NOISY_SWITCH_ON -- during this phase, any 'on' value means that we should keep this key pressed
@@ -163,7 +163,7 @@ lifecycle_phase_t lifecycle[] = {
         .next_phase = NOISY_SWITCH_LOCKED_OFF,
         .expected_data = 0,
         .unexpected_data_phase = NOISY_SWITCH_ON,
-        .timer = 92  // release latency
+        .timer =  58// release latency
     },
     {
         // NOISY_SWITCH_LOCKED_OFF -- during this phase, the key is off, no matter what value we read from the input
@@ -175,7 +175,7 @@ lifecycle_phase_t lifecycle[] = {
         .expected_data = 0,
         .unexpected_data_phase =  NOISY_SWITCH_LOCKED_OFF,
         .change_output_on_expected_transition = CHANGE_OUTPUT,
-        .timer = 30
+        .timer = 0
     }
 };
 
