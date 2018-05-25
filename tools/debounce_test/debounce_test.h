@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdbool.h>
+
 #define EXPECT_FALSE 0
 #define EXPECT_TRUE 1
 

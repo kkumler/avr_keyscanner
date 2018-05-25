@@ -45,7 +45,7 @@ void get_input () {
             comments[scan_counter+1][79]= '\0';
             continue;
         }
-        for(uint16_t i = 0; (i< sizeof(buffer) && buffer[i+1] != 0)  ; i++) {
+        for(int i = 0; (i < (int)sizeof(buffer) && buffer[i+1] != 0)  ; i++) {
             if(buffer[i] == '#') {
                 break;
             } else if(buffer[i] == '0') {
