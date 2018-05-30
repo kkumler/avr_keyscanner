@@ -41,6 +41,7 @@ fuse:
 install: all fuse flash
 
 clean:
+	make -C firmware clean
 	rm -fr out/*
 
 all: build flashing-tool
