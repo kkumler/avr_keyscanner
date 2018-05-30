@@ -57,19 +57,19 @@ for my $test (@testcases) {
 
         if ( $count_presses == $presses and $count_releases == $presses ) {
             $stats_by_db{$debouncer}{ok}++;
-            print "ok "
-              . $test_num++
-              . "     - $debouncer $test saw $presses presses\n";
+           print "ok " . $test_num . "     - $debouncer $test saw $presses presses\n";
+           print $debug;
         }
         else {
             $stats_by_db{$debouncer}{not_ok}++;
             print "not ok "
-              . $test_num++
+              . $test_num
               . " - $debouncer $test saw $count_presses presses and $count_releases releases but expected $presses\n";
             push @{ $fails_by_test{$test} },    $debouncer;
             push @{ $fails_by_db{$debouncer} }, $test;
+           print $debug;
         }
-        print $debug;
+        $test_num++;
     }
 }
 
