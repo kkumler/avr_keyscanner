@@ -41,7 +41,7 @@ static volatile enum {
 #define BRIGHTNESS_MASK	0b11100000
 
 #define ENABLE_LED_WRITES SPCR |= _BV(SPIE);
-#define DISABLE_LED_WRITES  // SPCR &= ~_BV(SPIE);
+#define DISABLE_LED_WRITES   SPCR &= ~_BV(SPIE);
 
 static volatile uint8_t global_brightness = 0xFF;
 
@@ -83,9 +83,9 @@ void led_update_bank(uint8_t *buf, const uint8_t bank) {
     });
     // Only do our update if we're updating bank 4
     // this way we avoid 3 wasted LED updates
-    if (bank == NUM_LED_BANKS-1) {
+    //if (bank == NUM_LED_BANKS-1) {
         led_data_ready();
-    }
+    // }
 }
 
 /* Update the transmit buffer with LED_BUFSZ bytes of new data
@@ -98,6 +98,7 @@ void led_update_all(uint8_t *buf) {
     DISABLE_INTERRUPTS({
         memcpy((uint8_t *)led_buffer.whole, buf, LED_BUFSZ);
     });
+    led_data_ready();
 }
 
 
@@ -116,6 +117,7 @@ void led_set_global_brightness(uint8_t brightness) {
     // the input to 31.
 
     global_brightness = BRIGHTNESS_MASK | brightness;
+    led_data_ready();
 }
 
 void led_set_all_to( uint8_t *buf) {
@@ -130,6 +132,7 @@ void led_set_all_to( uint8_t *buf) {
 
 void led_set_all_off (void) {
     memset((uint8_t*)led_buffer.whole, 0, sizeof(led_buffer.whole));
+    led_data_ready();
 }
 
 inline uint8_t led_get_spi_frequency() {
