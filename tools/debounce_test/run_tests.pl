@@ -97,7 +97,7 @@ sub report_press_counts {
 "Number of presses found. (Relative to the number claimed in the test file)\n";
     printf( "%60s |", "Debouncer:" );
     for my $db (
-        sort { length($a) <=> length($b) }
+        sort { length($a) <=> length($b) || $a cmp $b }
         keys %{ $press_counts->{'testcases/synthetic/00-simple'} }
       )
     {
@@ -125,7 +125,7 @@ sub report_press_counts {
         printf( "%-60.60s |", $display_name );
 
         for my $db (
-            sort { length($a) <=> length($b) }
+            sort { length($a) <=> length($b) || $a cmp $b }
             keys %{ $press_counts->{$test_name} }
           )
         {
