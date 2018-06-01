@@ -22,8 +22,8 @@ typedef struct {
 
 typedef struct {
     uint8_t next_phase;
-    uint8_t unexpected_data_phase;
     uint8_t expected_data;
+    uint8_t unexpected_data_phase;
     uint8_t change_output_on_expected_transition;
     uint8_t timer;
 } lifecycle_phase_t;
