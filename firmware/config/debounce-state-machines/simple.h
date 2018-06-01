@@ -23,6 +23,7 @@ lifecycle_phase_t lifecycle[] = {
         .next_phase = OFF,
         .expected_data = 0,
         .unexpected_data_phase = TURNING_ON,
+        .change_output_on_expected_transition = 0,
         .timer = 0,
     },
     {
@@ -38,6 +39,7 @@ lifecycle_phase_t lifecycle[] = {
         .next_phase = DEBOUNCING_ON,
         .expected_data = 1,
         .unexpected_data_phase = OFF,
+        .change_output_on_expected_transition = 0,
         .timer = 1,
     },
     {
@@ -65,6 +67,7 @@ lifecycle_phase_t lifecycle[] = {
         .next_phase = ON,
         .expected_data = 1,
         .unexpected_data_phase = DEBOUNCING_OFF,
+        .change_output_on_expected_transition = 0,
         .timer = 0,
     },
     {
@@ -79,6 +82,7 @@ lifecycle_phase_t lifecycle[] = {
         .next_phase = LOCKED_OFF,
         .expected_data = 0,
         .unexpected_data_phase = ON,
+        .change_output_on_expected_transition = 0,
         .timer = 10,  // release latency
     },
     {

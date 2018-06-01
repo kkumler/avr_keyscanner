@@ -24,6 +24,7 @@ lifecycle_phase_t lifecycle[] = {
         .next_phase = OFF,
         .expected_data = 0,
         .unexpected_data_phase = TURNING_ON,
+        .change_output_on_expected_transition = 0,
         .timer = 0,
     },
     {
@@ -39,6 +40,7 @@ lifecycle_phase_t lifecycle[] = {
         .next_phase = LOCKED_ON,
         .expected_data = 1,
         .unexpected_data_phase = OFF,
+        .change_output_on_expected_transition = 0,
         .timer = 1,
     },
     {
@@ -66,6 +68,7 @@ lifecycle_phase_t lifecycle[] = {
         .next_phase = ON,
         .expected_data = 1,
         .unexpected_data_phase = TURNING_OFF,
+        .change_output_on_expected_transition = 0,
         .timer = 0,
     },
     {
@@ -80,6 +83,7 @@ lifecycle_phase_t lifecycle[] = {
         .next_phase = LOCKED_OFF,
         .expected_data = 0,
         .unexpected_data_phase = NOISY_SWITCH_ON,
+        .change_output_on_expected_transition = 0,
         .timer = 15,  // release latency
     },
     {
@@ -107,7 +111,8 @@ lifecycle_phase_t lifecycle[] = {
         .next_phase = NOISY_SWITCH_OFF,
         .expected_data = 0,
         .unexpected_data_phase = NOISY_SWITCH_TURNING_ON,
-        .timer = 0
+        .change_output_on_expected_transition = 0,
+        .timer = 0 
     },
     {
         // NOISY_SWITCH_TURNING_ON-- during this phase, we believe that we've detected
@@ -122,6 +127,7 @@ lifecycle_phase_t lifecycle[] = {
         .next_phase = NOISY_SWITCH_LOCKED_ON,
         .expected_data = 1,
         .unexpected_data_phase = NOISY_SWITCH_OFF,
+        .change_output_on_expected_transition = 0,
         .timer = 1
     },
     {
@@ -149,7 +155,8 @@ lifecycle_phase_t lifecycle[] = {
         .next_phase = NOISY_SWITCH_ON,
         .expected_data = 1,
         .unexpected_data_phase = NOISY_SWITCH_TURNING_OFF,
-        .timer =0
+        .change_output_on_expected_transition = 0,
+        .timer = 0
     },
     {
         // NOISY_SWITCH_TURNING_OFF -- during this phase, we believe that we've detected
@@ -163,6 +170,7 @@ lifecycle_phase_t lifecycle[] = {
         .next_phase = NOISY_SWITCH_LOCKED_OFF,
         .expected_data = 0,
         .unexpected_data_phase = NOISY_SWITCH_ON,
+        .change_output_on_expected_transition = 0,
         .timer =  58// release latency
     },
     {
