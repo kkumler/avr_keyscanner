@@ -27,6 +27,8 @@ my %press_counts_by_test;
 
 #run_debouncer('Source data', $debouncers[0], $datafile,'i');
 
+my @output;
+
 for my $test (@testcases) {
     for my $debouncer (@debouncers) {
         next unless ( -f $test );
@@ -57,21 +59,21 @@ for my $test (@testcases) {
 
         if ( $count_presses == $presses and $count_releases == $presses ) {
             $stats_by_db{$debouncer}{ok}++;
-           print "ok " . $test_num . "     - $debouncer $test saw $presses presses\n";
-           print $debug;
+           push @output, "ok " . $test_num . "     - $debouncer $test saw $presses presses\n";
+           push @output, $debug;
         }
         else {
             $stats_by_db{$debouncer}{not_ok}++;
-            print "not ok "
-              . $test_num
-              . " - $debouncer $test saw $count_presses presses and $count_releases releases but expected $presses\n";
+            push @output, "not ok " . $test_num . " - $debouncer $test saw $count_presses presses and $count_releases releases but expected $presses\n";
             push @{ $fails_by_test{$test} },    $debouncer;
             push @{ $fails_by_db{$debouncer} }, $test;
-           print $debug;
+           push @output, $debug;
         }
         $test_num++;
     }
 }
+
+print join("",@output);
 
 for my $db (
     sort { $stats_by_db{$b}{ok} <=> $stats_by_db{$a}{ok} }
