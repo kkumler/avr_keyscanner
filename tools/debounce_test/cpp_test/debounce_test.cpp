@@ -341,7 +341,10 @@ int main(int argc, char *argv[]) {
 
     uint64_t    f_cpu = F_CPU;
     uint64_t    prescaler = 256;
-    uint64_t    target_sampling_rate = f_cpu / (prescaler * uint64_t(interval));
+    uint64_t    target_sampling_rate = 2000;
+    if (interval != 14) {
+	target_sampling_rate = f_cpu / (prescaler * uint64_t(interval));
+    }
 
     int         test_sucess = 0;
     int         total_tests = 0;
