@@ -40,7 +40,7 @@ lifecycle_phase_t lifecycle[] = {
         .expected_data = 1,
         .unexpected_data_phase = OFF,
         .change_output_on_expected_transition = 0,
-        .timer = 1,
+        .timer = 2,
     },
     {
         // DEBOUNCING_ON -- during this phase, the key is on, no matter what value we read from the input
@@ -53,7 +53,7 @@ lifecycle_phase_t lifecycle[] = {
         .expected_data = 1,
         .unexpected_data_phase = DEBOUNCING_ON,
         .change_output_on_expected_transition = CHANGE_OUTPUT,
-        .timer = 10,
+        .timer = 55,
     },
     {
         // ON -- during this phase, any 'on' value means that we should keep this key pressed
@@ -83,7 +83,7 @@ lifecycle_phase_t lifecycle[] = {
         .expected_data = 0,
         .unexpected_data_phase = ON,
         .change_output_on_expected_transition = 0,
-        .timer = 10,  // release latency
+        .timer = 17,  // release latency
     },
     {
         // LOCKED_OFF -- during this phase, the key is off, no matter what value we read from the input
@@ -95,7 +95,7 @@ lifecycle_phase_t lifecycle[] = {
         .expected_data = 0,
         .unexpected_data_phase =  LOCKED_OFF,
         .change_output_on_expected_transition = CHANGE_OUTPUT,
-        .timer = 10,
+        .timer = 1,
     },
 };
 
