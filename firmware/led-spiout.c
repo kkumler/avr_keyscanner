@@ -21,6 +21,10 @@
  * shouldn't matter.
  */
 
+#define BRIGHTNESS_MASK 0b11100000
+
+#define ENABLE_LED_WRITES SPCR |= _BV(SPIE);
+#define DISABLE_LED_WRITES SPCR &= ~_BV(SPIE);
 
 uint8_t led_spi_frequency = LED_SPI_FREQUENCY_DEFAULT;
 
@@ -37,11 +41,6 @@ static volatile enum {
     DATA,
     END_FRAME
 } led_phase;
-
-#define BRIGHTNESS_MASK	0b11100000
-
-#define ENABLE_LED_WRITES SPCR |= _BV(SPIE);
-#define DISABLE_LED_WRITES   SPCR &= ~_BV(SPIE);
 
 static volatile uint8_t global_brightness = 0xFF;
 
