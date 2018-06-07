@@ -24,6 +24,9 @@
 // so make it the default
 #define LED_SPI_FREQUENCY_DEFAULT LED_SPI_FREQUENCY_1MHZ
 
+// Only for fast led_init, then set to LED_SPI_FREQUENCY_DEFAULT
+#define LED_SPI_FREQUENCY_FOR_INIT LED_SPI_FREQUENCY_1MHZ
+
 
 #define TWI_CMD_LED_UPDATE_ALL 0x79
 #define TWI_CMD_LED_BASE 0x80
