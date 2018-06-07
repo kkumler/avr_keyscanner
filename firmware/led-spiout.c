@@ -230,7 +230,8 @@ void led_init() {
     led_turn_all_off_synchronous();
 
     /* Set the default led SPI frequency */
-    led_set_spi_frequency(led_spi_frequency);
+    if (led_spi_frequency != LED_SPI_FREQUENCY_DEFAULT)
+        led_set_spi_frequency(LED_SPI_FREQUENCY_DEFAULT);
 
     /* Trigger a first transmission */
     leds_dirty = 1;
