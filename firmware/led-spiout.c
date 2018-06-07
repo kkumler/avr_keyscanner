@@ -138,6 +138,7 @@ void led_set_all_off (void) {
 inline uint8_t led_get_spi_frequency() {
     return led_spi_frequency;
 }
+
 void led_set_spi_frequency(uint8_t frequency) {
     led_spi_frequency = frequency;
 
