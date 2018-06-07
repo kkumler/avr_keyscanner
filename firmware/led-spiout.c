@@ -134,7 +134,7 @@ void led_set_all_off (void) {
     led_data_ready();
 }
 
-inline uint8_t led_get_spi_frequency() {
+uint8_t led_get_spi_frequency() {
     return led_spi_frequency;
 }
 
