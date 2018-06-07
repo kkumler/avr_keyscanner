@@ -26,7 +26,7 @@
 #define ENABLE_LED_WRITES SPCR |= _BV(SPIE);
 #define DISABLE_LED_WRITES SPCR &= ~_BV(SPIE);
 
-uint8_t led_spi_frequency = LED_SPI_FREQUENCY_DEFAULT;
+static uint8_t led_spi_frequency = LED_SPI_FREQUENCY_DEFAULT;
 
 typedef union {
     uint8_t each[NUM_LEDS][LED_DATA_SIZE];
