@@ -42,7 +42,7 @@ static volatile enum {
     END_FRAME
 } led_phase;
 
-static volatile uint8_t global_brightness = 0xFF;
+static volatile uint8_t global_brightness = BRIGHTNESS_MASK | 31; /* max is 31 */
 
 static volatile uint8_t index; /* next byte to transmit */
 static volatile uint8_t subpixel = 0;
