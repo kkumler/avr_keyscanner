@@ -55,7 +55,9 @@ typedef union {
 /* (No volatile because all writes are outside the interrupt and in PROTECT_LED_WRITES) */
 static led_buffer_t led_buffer = {.whole={0}};
 
-static uint8_t global_brightness = BRIGHTNESS_MASK | 31; /* max is 31 */
+
+#define LED_BRIGHTNESS_MAX 31
+static uint8_t global_brightness = BRIGHTNESS_MASK | LED_BRIGHTNESS_MAX;
 
 /* (No volatile because no data race and we do only atomic operations (assignment should be atomic)) */
 static uint8_t leds_dirty = 1;
