@@ -247,7 +247,11 @@ typedef enum {
 } led_phase_t;
 
 /* (No volatile because never touch outside of the interrupt) */
-static led_phase_t led_phase = START_FRAME;
+
+// We don't use the led_phase_t type because GCC interprets that as a 16 bit int
+// which results in heavier code 
+static uint8_t led_phase = START_FRAME;
+
 static uint8_t index = 0; /* next byte to transmit */
 static uint8_t subpixel = 0;
 
