@@ -29,20 +29,6 @@
 //#define DEBOUNCE_STATE_MACHINE "config/debounce-state-machines/simple.h"
 
 
-// Should we be treating our columns as outputs or our rows?
-// If the columns are outputs, our keyscanning loop has to do twice as much work,
-// as we have 8 columns and four rows. However, it means that we're able to drive
-// the column pins high, keeping the row pins low. When doing a read, we're pushing
-// a lot more power through the circuit. If there's a marginal connection, this should,
-// theoretically, get us much cleaner reads.
-//
-// If COLS_ARE_OUTPUTS is NOT defined, we treat our rows as outputs.
-// To do this we, turn on pull-up resistors on the columns and drive the rows
-// LOW when we want to read them. This is a pretty traditional scheme. It's less work
-// but, in theory, will not get us reads that are as clean as the other way round.
-
-//#define COLS_ARE_OUTPUTS
-
 // Actual hardware configuration
 
 // ROWS
