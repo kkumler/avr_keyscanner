@@ -24,12 +24,3 @@
 #define EXPECT_TRUE 1
 
 #define STATIC_ASSERT(COND, MSG) typedef char static_assertion_##MSG[(COND)?1:-1] __attribute__((unused))
-
-
-#define DISABLE_INTERRUPTS(code) do{ \
-    cli(); \
-    { \
-        code \
-    } \
-    sei(); \
-}while(0)

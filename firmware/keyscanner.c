@@ -1,4 +1,5 @@
 #include <avr/interrupt.h>
+#include <util/atomic.h>
 #include <util/delay.h>
 #include <string.h>
 #include "main.h"
@@ -84,7 +85,7 @@ inline void keyscanner_record_state_rotate_ccw (void) {
         }
     }
 
-    DISABLE_INTERRUPTS({
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE) ({
         for(int i =7  ; i>= ( 8-KEY_REPORT_SIZE_BYTES); i--) {
             ringbuf_append(scan_data_as_rows[i]);
         }
@@ -99,7 +100,7 @@ inline void keyscanner_record_state (void) {
     // Run this with interrupts off to make sure that
     // when we read from the ringbuffer, we always get
     // four bytes representing a single keyboard state.
-    DISABLE_INTERRUPTS({
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE) ({
         for(int i =0 ; i< KEY_REPORT_SIZE_BYTES; i++) {
             ringbuf_append(db[i].state);
         }
