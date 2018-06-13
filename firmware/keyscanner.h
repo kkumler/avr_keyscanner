@@ -29,11 +29,6 @@
     PINS_LOW(DDR_INPUT, MASK_INPUT); \
     PINS_HIGH(PORT_INPUT, MASK_INPUT);
 
-#define ACTIVATE_OUTPUT_PIN(output_pin) LOW(PORT_OUTPUT, output_pin);
-#define DEACTIVATE_OUTPUT_PIN(output_pin) HIGH(PORT_OUTPUT, output_pin);
-
-#define REINIT_INPUT_PINS do {} while(0)
-#define CLEANUP_INPUT_PINS do {} while(0)
 
 #define RECORD_KEY_STATE keyscanner_record_state();
 

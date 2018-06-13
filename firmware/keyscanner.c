@@ -46,11 +46,8 @@ void keyscanner_main(void) {
 
     // For each enabled row...
     for (uint8_t output_pin = 0; output_pin < COUNT_OUTPUT; ++output_pin) {
-
-        REINIT_INPUT_PINS;
-
         // Toggle the output we want to check
-        ACTIVATE_OUTPUT_PIN(output_pin);
+        LOW(PORT_OUTPUT, output_pin);
 
         /* We need a no-op for synchronization. So says the datasheet
          * in Section 10.2.5 */
@@ -60,9 +57,7 @@ void keyscanner_main(void) {
         pin_data = PIN_INPUT;
 
         // Toggle the output we want to read back off
-        DEACTIVATE_OUTPUT_PIN(output_pin);
-
-        CLEANUP_INPUT_PINS;
+ 	 HIGH(PORT_OUTPUT, output_pin);
 
         // Debounce key state
         debounced_changes |= debounce(KEYSCANNER_CANONICALIZE_PINS(pin_data), db + output_pin);
