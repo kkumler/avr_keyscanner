@@ -30,8 +30,6 @@
     PINS_HIGH(PORT_INPUT, MASK_INPUT);
 
 
-#define RECORD_KEY_STATE keyscanner_record_state();
-
 // When a key is pressed the input pin will read LOW
 // Active pins on are low. So the debouncer inverts them before working with them
 #define KEYSCANNER_CANONICALIZE_PINS(pins) ~pins
@@ -43,7 +41,6 @@
 void keyscanner_init(void);
 void keyscanner_main(void);
 void keyscanner_record_state(void);
-void keyscanner_record_state_rotate_ccw(void);
 void keyscanner_ringbuf_update(uint8_t row1, uint8_t row2, uint8_t row3, uint8_t row4);
 void keyscanner_timer1_init(void);
 
