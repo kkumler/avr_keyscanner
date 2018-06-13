@@ -5,7 +5,7 @@
 #define TWI_BASE_ADDRESS     0x58
 
 
-#define DEVICE_VERSION 3
+#define DEVICE_VERSION 4
 
 
 // Default about 0.47ms between reads.
