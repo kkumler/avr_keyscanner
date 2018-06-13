@@ -46,18 +46,17 @@ void keyscanner_main(void) {
 
     // For each enabled row...
     for (uint8_t output_pin = 0; output_pin < COUNT_OUTPUT; ++output_pin) {
-        // Toggle the output we want to check
-        LOW(PORT_OUTPUT, output_pin);
-
-        /* We need a no-op for synchronization. So says the datasheet
-         * in Section 10.2.5 */
-        asm volatile("nop\n\t");
 
         // Read pin data
         pin_data = PIN_INPUT;
 
-        // Toggle the output we want to read back off
- 	 HIGH(PORT_OUTPUT, output_pin);
+        // Toggle the output we just read back off
+ 	HIGH(PORT_OUTPUT, output_pin);
+        
+	// Toggle the output for the 'next' pin
+	// We do this here to give the pin time to settle
+	
+        LOW(PORT_OUTPUT, ((output_pin+1) % COUNT_OUTPUT));
 
         // Debounce key state
         debounced_changes |= debounce(KEYSCANNER_CANONICALIZE_PINS(pin_data), db + output_pin);
